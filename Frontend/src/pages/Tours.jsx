@@ -90,6 +90,7 @@ const Tours = () => {
                 <option>nature</option>
                 <option>beaches</option>
                 <option>adventure</option>
+                <option>Historegem</option>
               </select>
             </div>
 
