@@ -12,6 +12,7 @@ import Calender from "./Calender";
 function DivideDash() {
   const [data, setData] = useState([]);
   const [Auths, setAuth] = useState([]);
+  const [Booking, setBooking] = useState([]);
 
   const HandalReadTour = () => {
     axios
@@ -25,16 +26,24 @@ function DivideDash() {
     axios
       .get("http://localhost:9005/api/readAuth")
       .then((res) => {
-        setAuth(res.data.data);
+        setAuth(res.data.data || []);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log("Auth Fetch Error:", error));
+  };
+  const HandalReadBooking = () => {
+    axios
+      .get("http://localhost:9005/api/readBooking")
+      .then((res) => {
+        // FIXED: Accessing res.data.data to match your controller
+        setBooking(res.data.data || []);
+      })
+      .catch((error) => console.log("Booking Fetch Error:", error));
   };
 
   useEffect(() => {
     HandalReadTour();
-  }, []);
-  useEffect(() => {
     HandalAuthTour();
+    HandalReadBooking(); // Added this missing call
   }, []);
 
   return (
@@ -50,7 +59,11 @@ function DivideDash() {
           <div className="w-full lg:w-2/3 space-y-6">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               <UserCard bg="bg-emerald-600" count={data.length} title="Tours" />
-              <UserCard bg="bg-slate-800" count="4,123" title="Bookings" />
+              <UserCard
+                bg="bg-slate-800"
+                count={Booking.length}
+                title="Bookings"
+              />
               <UserCard
                 bg="bg-emerald-600"
                 count={Auths.length}
