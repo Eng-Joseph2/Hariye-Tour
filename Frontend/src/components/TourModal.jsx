@@ -6,8 +6,8 @@ const TourModal = ({ isOpen, onClose, onSubmit, editData }) => {
   const [formData, setFormData] = useState({
     title: "",
     location: "",
-    country: "Somalia",
-    category: "Nature",
+    country: "",
+    category: "",
     price: "",
     duration: "",
     startDate: "",
@@ -26,8 +26,8 @@ const TourModal = ({ isOpen, onClose, onSubmit, editData }) => {
       setFormData({
         title: editData.name || "",
         location: editData.location || editData.country || "", // Fallback
-        country: editData.country || "Somalia",
-        category: editData.category || "Nature",
+        country: editData.country || "",
+        category: editData.category || "",
         price: editData.price || "",
         duration: editData.duration || "",
         startDate: editData.startDate || "",
@@ -44,8 +44,8 @@ const TourModal = ({ isOpen, onClose, onSubmit, editData }) => {
       setFormData({
         title: "",
         location: "",
-        country: "Somalia",
-        category: "Nature",
+        country: "",
+        category: "",
         price: "",
         duration: "",
         startDate: "",
@@ -134,7 +134,7 @@ const TourModal = ({ isOpen, onClose, onSubmit, editData }) => {
             {/* ✅ Swapped Country To CustomSelect */}
             <CustomSelect
               label="Country"
-              options={["Somalia", "Kenya", "Tanzania", "Ethiopia"]}
+              options={["Somalia", "Kenya", "Tanzania", "Ethiopia", "Uganda", "Rwanda", "Djibouti", "South Sudan", "Eritrea", "Burundi"]}
               value={formData.country}
               required={true}
               onChange={(val) => handleSelectChange("country", val)}

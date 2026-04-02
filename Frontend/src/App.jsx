@@ -38,14 +38,14 @@ const App = () => {
       <Routes>
         {/* --- DYNAMIC ROOT ROUTE --- */}
         {/* Haddii uu jiro user, tuso Home (MainLayout gudahiisa). Haddii kale, tuso Login. */}
-        <Route
+        {/* <Route
           path="/"
           element={user ? <Navigate to="/home" replace /> : <Login />}
-        />
+        /> */}
 
         {/* --- MAIN PAGES (WITH NAVBAR) --- */}
         <Route element={<MainLayout />}>
-          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/bookings" element={<MyBookings />} />
           <Route path="/bookings/addBook" element={<AddBooking />} />
           <Route path="/tours" element={<Tours />} />

@@ -3,18 +3,18 @@ import Menu from "../Menu";
 import AdminAvatar from "../AdminAvatar";
 import { Edit, Trash2, Plus } from "lucide-react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+// Import your AddTour component
+import AddTour from "./AddTour";
 
 function TourTable() {
   const [tours, setTours] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for Modal
+  const [editData, setEditData] = useState(null); // State for Editing
 
-  // 1. Akhrinta Xogta Tours-ka
   const fetchTours = () => {
     axios
       .get("http://localhost:9005/api/readAllTour")
-      .then((res) => {
-        setTours(res.data.data);
-      })
+      .then((res) => setTours(res.data.data))
       .catch((error) => console.log("Error fetching tours:", error));
   };
 
@@ -22,20 +22,35 @@ function TourTable() {
     fetchTours();
   }, []);
 
-  const deleteTour = (id) => {
-    if (window.confirm("Ma hubtaa inaad tirtirto tour-kan?")) {
-      axios
-        .delete(`http://localhost:9005/api/deleteTour/${id}`)
-        .then(() => {
-          fetchTours();
-        })
-        .catch((err) => console.log(err));
-    }
+  const handleAddNew = () => {
+    setEditData(null); // Clear edit data
+    setIsModalOpen(true); // Open Modal
+  };
+
+  const handleEdit = (tour) => {
+    setEditData(tour); // Pass tour data to modal
+    setIsModalOpen(true);
+  };
+
+  const handleFormSubmit = (formData) => {
+    const url = editData
+      ? `http://localhost:9005/api/updateTour/${editData._id}`
+      : "http://localhost:9005/api/addTour";
+
+    const method = editData ? "put" : "post";
+
+    axios[method](url, formData)
+      .then(() => {
+        alert(editData ? "Tour Updated!" : "Tour Created!");
+        fetchTours();
+        setIsModalOpen(false);
+      })
+      .catch(err => alert("Error saving tour"));
   };
 
   return (
     <div className="min-h-screen flex overflow-hidden">
-      <div className="w-[14%] md:w-[8%] lg:w-[18%] xl:w-[15%] bg-[#0f172a] border-r border-slate-800 h-screen sticky fixed top-0">
+      <div className="w-[18%] bg-[#0f172a] h-screen sticky top-0">
         <Menu />
       </div>
 
@@ -43,14 +58,14 @@ function TourTable() {
         <AdminAvatar />
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-xl font-bold text-slate-800">
-              Manage All Tours
-            </h1>
-            <Link to="/admin/dash/Tour/Add-tour">
-              <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-emerald-600/20">
-                <Plus size={18} /> Add New Tour
-              </button>
-            </Link>
+            <h1 className="text-xl font-bold text-slate-800">Manage All Tours</h1>
+            {/* REMOVED <Link> - Using onClick instead */}
+            <button
+              onClick={handleAddNew}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-all shadow-lg"
+            >
+              <Plus size={18} /> Add New Tour
+            </button>
           </div>
 
           <div className="">
@@ -119,11 +134,10 @@ function TourTable() {
                     </td>
                     <td className="p-4">
                       <span
-                        className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
-                          tour.available === "yes"
+                        className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${tour.available === "yes"
                             ? "bg-emerald-100 text-emerald-700"
                             : "bg-red-100 text-red-700"
-                        }`}
+                          }`}
                       >
                         {tour.available === "yes" ? "ACTIVE" : "InActive"}
                       </span>
@@ -148,6 +162,14 @@ function TourTable() {
           </div>
         </div>
       </div>
+
+      {/* THE MODAL COMPONENT */}
+      <AddTour
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleFormSubmit}
+        editData={editData}
+      />
     </div>
   );
 }
