@@ -21,7 +21,7 @@ const sidebarLinks = [
   {
     name: "Bookings",
     icon: <CalendarCheck size={20} />,
-    path: "/admin/bookings",
+    path: "/admin/dash/BookingTable",
   },
   {
     name: "Tour Requests",
