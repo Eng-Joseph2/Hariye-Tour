@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Menu from "../Menu";
 import AdminAvatar from "../AdminAvatar";
-import { Edit, Trash2, Plus } from "lucide-react";
+import { Edit, Trash2, Plus, ClockFading } from "lucide-react";
 import axios from "axios";
-// Import your AddTour component
 import AddTour from "./AddTour";
 
 function TourTable() {
   const [tours, setTours] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for Modal
-  const [editData, setEditData] = useState(null); // State for Editing
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editData, setEditData] = useState(null);
 
   const fetchTours = () => {
     axios
@@ -22,30 +21,34 @@ function TourTable() {
     fetchTours();
   }, []);
 
-  const handleAddNew = () => {
-    setEditData(null); // Clear edit data
-    setIsModalOpen(true); // Open Modal
+  // DELETE FUNCTION
+  const deleteTour = (id) => {
+    if (window.confirm("Are you sure you want to delete this tour?")) {
+      axios
+        .delete(`http://localhost:9005/api/deleteTour/${id}`)
+        .then(() => {
+          fetchTours();
+        })
+        .catch((err) => {
+          console.log(err);
+          alert("sorry we cann't add");
+        });
+    }
   };
 
-  const handleEdit = (tour) => {
-    setEditData(tour); // Pass tour data to modal
+  const handleAddNew = () => {
+    setEditData(null);
     setIsModalOpen(true);
   };
 
-  const handleFormSubmit = (formData) => {
-    const url = editData
-      ? `http://localhost:9005/api/updateTour/${editData._id}`
-      : "http://localhost:9005/api/addTour";
+  const handleEdit = (tour) => {
+    setEditData(tour);
+    setIsModalOpen(true);
+  };
 
-    const method = editData ? "put" : "post";
-
-    axios[method](url, formData)
-      .then(() => {
-        alert(editData ? "Tour Updated!" : "Tour Created!");
-        fetchTours();
-        setIsModalOpen(false);
-      })
-      .catch(err => alert("Error saving tour"));
+  const handleFormSubmit = () => {
+    fetchTours();
+    setIsModalOpen(false);
   };
 
   return (
@@ -58,8 +61,9 @@ function TourTable() {
         <AdminAvatar />
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-xl font-bold text-slate-800">Manage All Tours</h1>
-            {/* REMOVED <Link> - Using onClick instead */}
+            <h1 className="text-xl font-bold text-slate-800">
+              Manage All Tours
+            </h1>
             <button
               onClick={handleAddNew}
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-all shadow-lg"
@@ -127,28 +131,28 @@ function TourTable() {
                       ${tour.price}
                     </td>
                     <td className="p-4 text-sm text-slate-600">
-                      {tour.days} Days
+                      {tour.Duration} Days
                     </td>
                     <td className="p-4 text-sm text-slate-600">
                       {tour.max_Gust} People
                     </td>
                     <td className="p-4">
                       <span
-                        className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${tour.available === "yes"
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-red-100 text-red-700"
-                          }`}
+                        className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${tour.available === "yes" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
                       >
                         {tour.available === "yes" ? "ACTIVE" : "InActive"}
                       </span>
                     </td>
                     <td className="p-4">
                       <div className="flex justify-center gap-2">
-                        <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
+                        <button
+                          onClick={() => handleEdit(tour)}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
+                        >
                           <Edit size={16} />
                         </button>
                         <button
-                          onClick={() => deleteTour(tour._id)}
+                          onClick={() => deleteTour(tour._id)} // APPLIED HERE
                           className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
                         >
                           <Trash2 size={16} />
@@ -163,7 +167,6 @@ function TourTable() {
         </div>
       </div>
 
-      {/* THE MODAL COMPONENT */}
       <AddTour
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
