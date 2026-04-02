@@ -3,6 +3,8 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { FaMapMarkerAlt } from "react-icons/fa";
 
+import CustomSelect from "../components/ui/CustomSelect";
+
 const Tours = () => {
   const [data, setData] = useState([]);
   const [country, setCountry] = useState("All Countries");
@@ -58,58 +60,32 @@ const Tours = () => {
         {/* SIDEBAR - Filter Section */}
         <div className="w-full md:w-1/4 bg-white p-6 rounded-2xl shadow-sm border h-fit sticky top-24">
           <div className="space-y-6">
+
             {/* Country Select */}
-            <div>
-              <label className="block text-sm font-semibold mb-2">
-                Country
-              </label>
-              <select
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                className="w-full p-2 border rounded-lg outline-none bg-gray-50"
-              >
-                <option>All Countries</option>
-                <option>Tanzania</option>
-                <option>Somalia</option>
-                <option>Kenya</option>
-                <option>Ethiopia</option>
-              </select>
-            </div>
+            <CustomSelect
+              label="Country"
+              value={country}
+              onChange={(val) => setCountry(val)}
+              options={["All Countries", "Somalia", "Kenya", "Tanzania", "Ethiopia", "Uganda", "Rwanda", "Djibouti", "South Sudan", "Eritrea", "Burundi"]}
+            />
 
             {/* Category Select */}
-            <div>
-              <label className="block text-sm font-semibold mb-2">
-                Category
-              </label>
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full p-2 border rounded-lg outline-none bg-gray-50"
-              >
-                <option>All Categories</option>
-                <option>nature</option>
-                <option>beaches</option>
-                <option>adventure</option>
-                <option>Historegem</option>
-              </select>
-            </div>
+            <CustomSelect
+              label="Category"
+              value={category}
+              onChange={(val) => setCategory(val)}
+              options={["All Categories", "Nature", "Beaches", "Forests", "Farms", "Historical", "Restaurants"]}
+            />
 
             {/* Price Select */}
-            <div>
-              <label className="block text-sm font-semibold mb-2">
-                Price Range
-              </label>
-              <select
-                value={priceRange}
-                onChange={(e) => setPriceRange(e.target.value)}
-                className="w-full p-2 border rounded-lg outline-none bg-gray-50"
-              >
-                <option value="All Prices">All Prices</option>
-                <option value="0-500">$0 - $500</option>
-                <option value="501-1000">$501 - $1000</option>
-                <option value="1001-5000">$1001 - $5000</option>
-              </select>
-            </div>
+            <CustomSelect
+              label="Price Range"
+              value={priceRange}
+              onChange={(val) => setPriceRange(val)}
+              /* Note: Use the display labels here. If your filtering logic 
+                 needs the "0-500" format, see the tip below. */
+              options={["All Prices", "$0 - $500", "$501 - $1000", "$1001 - $5000"]}
+            />
 
             <button
               onClick={resetFilters}
