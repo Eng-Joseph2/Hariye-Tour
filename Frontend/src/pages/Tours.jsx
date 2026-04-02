@@ -47,13 +47,15 @@ const Tours = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 mt-18">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-teal-700 to-blue-600 pt-32 pb-20 px-10 md:px-32 text-white">
-        <h1 className="text-4xl font-bold mb-4">All Tours</h1>
-        <p className="text-lg opacity-90">
-          Discover {filteredData.length} amazing tours across East Africa
-        </p>
+      <div className="bg-gradient-to-r from-green-700 to-blue-600 h-[25vh] flex flex-col  justify-center text-white">
+        <div className="w-[80%] mx-auto">
+          <h1 className="text-4xl font-bold mb-4">All Tours</h1>
+          <p className="text-lg opacity-90">
+            Discover {filteredData.length} amazing tours across East Africa
+          </p>
+        </div>
       </div>
 
       <div className="max-w-[1400px] mx-auto px-4 py-12 flex flex-col md:flex-row gap-8">

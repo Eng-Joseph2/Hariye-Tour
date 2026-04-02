@@ -49,7 +49,7 @@ function Navbar() {
     }`;
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-white shadow-sm z-[100] border-b border-slate-100 font-sans">
+    <header className="fixed top-0 left-0 w-full bg-white shadow-sm z-[100] border-b border-slate-100">
       <nav className="mx-auto w-[90%] py-4 flex justify-between items-center lg:w-[80%]">
         
         {/* Logo */}

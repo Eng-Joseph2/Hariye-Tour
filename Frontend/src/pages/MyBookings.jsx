@@ -27,15 +27,17 @@ const MyBookings = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] font-sans">
+    <div className="min-h-screen bg-[#F8FAFC] font-sans mt-18">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-[#007F5F] via-[#006B5F] to-[#005F73] py-20 px-8 md:px-24 text-white">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">My Bookings</h1>
-          <p className="opacity-90 text-sm">
+      <div className="bg-gradient-to-r from-green-700 to-blue-600 h-[25vh] flex flex-col  justify-center text-white">
+
+        <div className="w-[80%] mx-auto">
+          <h1 className="text-4xl font-bold mb-4">My Bookings</h1>
+          <p className="text-lg opacity-90">
             Manage your tours and view tickets
           </p>
         </div>
+
       </div>
 
       {/* Bookings List Section */}

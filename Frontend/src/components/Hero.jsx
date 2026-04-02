@@ -19,7 +19,7 @@ function Hero() {
   }, []);
 
   return (
-    <div className="relative h-[85vh] md:h-[91vh] w-full overflow-hidden">
+    <div className="relative h-[100vh] w-full overflow-hidden">
       {/* Images */}
       {images.map((img, index) => (
         <div
