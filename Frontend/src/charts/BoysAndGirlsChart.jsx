@@ -12,25 +12,18 @@ const data = [
   {
     name: "Boys",
     value: 450,
-    fill: "#3b82f6", // Blue
+    fill: "#1e293b", // dark slate
   },
   {
     name: "Girls",
     value: 520,
-    fill: "#10b981", // Emerald
+    fill: "#10b981", // emerald
   },
 ];
 
-const style = {
-  top: "50%",
-  right: 0,
-  transform: "translate(0, -50%)",
-  lineHeight: "32px",
-};
-
 function BoysAndGirlsRadialChart() {
   return (
-    <div className=" p-6 rounded-3xl shadow-sm border border-gray-100 bg-white w-[40%] h-[300px]">
+    <div className="p-6 rounded-3xl shadow-sm border border-gray-100 bg-white w-[40%] h-[300px]">
       <h2 className="text-xl font-bold text-slate-800 mb-2 text-center">
         Gender Distribution
       </h2>
@@ -40,7 +33,7 @@ function BoysAndGirlsRadialChart() {
 
       <ResponsiveContainer width="100%" height="80%">
         <RadialBarChart
-          cx="50%"
+          cx="40%" // 👈 moved left to give space for legend
           cy="50%"
           innerRadius="30%"
           outerRadius="100%"
@@ -60,12 +53,12 @@ function BoysAndGirlsRadialChart() {
             background
             clockWise
             dataKey="value"
-            radius={[10, 10, 10, 10]}
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.fill} />
             ))}
           </RadialBar>
+
           <Tooltip
             contentStyle={{
               borderRadius: "12px",
@@ -73,11 +66,19 @@ function BoysAndGirlsRadialChart() {
               boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
             }}
           />
+
           <Legend
             iconSize={12}
             layout="vertical"
             verticalAlign="middle"
-            wrapperStyle={style}
+            align="Bottom"
+            wrapperStyle={{
+              right: -9,
+              top: "50%",
+              bottom: 300,
+              left: 90,
+              transform: "translateY(-50%)",
+            }}
           />
         </RadialBarChart>
       </ResponsiveContainer>

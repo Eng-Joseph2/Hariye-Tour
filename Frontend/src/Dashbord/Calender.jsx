@@ -76,7 +76,7 @@ function Calender() {
           <div
             key={d}
             className={
-              d === "SAT" || d === "SUN" ? "text-blue-100" : "text-yellow-100"
+              d === "SAT" || d === "SUN" ? "text-[#0f9f6e]" : "text-[#1e293b]"
             }
           >
             {d}
@@ -100,10 +100,7 @@ function Calender() {
         {Array.from({ length: daysInMonth }).map((_, i) => {
           const day = i + 1;
 
-          // ✅ Midabka Huruudda ah (Yellow) - Tusaale maalin muhiim ah (sida 9-ka sawirka)
           const isSpecialDay = day === 9;
-
-          // ✅ Midabka Buluugga ah (Light Blue) - Marka qofku gujiyo
           const isSelected = day === selectedDay;
 
           return (
@@ -111,8 +108,8 @@ function Calender() {
               key={day}
               onClick={() => setSelectedDay(day)}
               className={`h-12 flex items-center justify-center cursor-pointer text-sm font-bold transition-all duration-200
-                ${isSpecialDay ? "bg-[#ffff99] text-gray-800" : ""} 
-                ${isSelected ? "bg-[#cceeff] text-[#0066cc]" : ""}
+                ${isSpecialDay ? "bg-[#0f9f6e] text-gray-800" : ""} 
+                ${isSelected ? "bg-[#1e293b] text-[#0066cc]" : ""}
                 ${!isSpecialDay && !isSelected ? "text-gray-700 hover:bg-gray-50" : ""}
                 ${(i + firstDayOfMonth) % 7 === 5 || (i + firstDayOfMonth) % 7 === 6 ? "text-red-500" : ""}
               `}

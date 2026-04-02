@@ -64,7 +64,7 @@ const Signup = () => {
             />
           </svg>
           <span className="text-lg font-medium text-slate-700">
-            East Africa Tours
+            Hariye Tour Agency
           </span>
         </div>
         <h1 className="text-2xl font-bold text-slate-900">Create Account</h1>

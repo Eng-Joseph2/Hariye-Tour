@@ -71,14 +71,12 @@ const Login = () => {
             />
           </svg>
           <span className="text-2xl font-bold text-slate-800 tracking-tight">
-            East Africa <span className="text-emerald-600">Tours</span>
+            Hariye Tour <span className="text-emerald-600">Agency</span>
           </span>
         </div>
-        <h1 className="text-3xl font-extrabold text-slate-900 mt-4">
-          Ku soo dhawaaw
-        </h1>
+        <h1 className="text-3xl font-extrabold text-slate-900 mt-4">Welcome</h1>
         <p className="text-slate-500 mt-2">
-          Fadlan geli macluumaadkaaga si aad u gashid
+          Please enter your information to log in.
         </p>
       </div>
 
@@ -106,7 +104,7 @@ const Login = () => {
             <div className="w-full border-t border-slate-100"></div>
           </div>
           <span className="relative bg-white px-4 text-xs uppercase text-slate-400 font-bold">
-            ama Email & Password
+            or Email & Password
           </span>
         </div>
 
@@ -118,7 +116,7 @@ const Login = () => {
             <input
               type="email"
               name="email"
-              placeholder="magaca@email.com"
+              placeholder="example@email.com"
               value={formData.email}
               onChange={handleChange}
               required
@@ -148,11 +146,11 @@ const Login = () => {
                 className="w-5 h-5 accent-emerald-600 rounded-lg cursor-pointer"
               />
               <span className="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">
-                I xasuuso
+                Remember me
               </span>
             </label>
             <span className="text-sm text-emerald-600 font-bold hover:text-emerald-700 cursor-pointer">
-              Ma ilowday?
+              Forget password?
             </span>
           </div>
 
@@ -160,17 +158,17 @@ const Login = () => {
             type="submit"
             className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-emerald-100 transition-all transform active:scale-95"
           >
-            Gali System-ka
+            Login
           </button>
         </form>
 
         <p className="text-center mt-10 text-slate-500 font-medium">
-          Ma haysatid Account?{" "}
+          Do you have account?{" "}
           <Link
             to="/signup"
             className="text-emerald-600 font-bold hover:underline ml-1"
           >
-            Is-diiwaangeli
+            Sign in
           </Link>
         </p>
       </div>

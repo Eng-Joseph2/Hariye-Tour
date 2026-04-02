@@ -8,28 +8,26 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  Area,
-  AreaChart,
 } from "recharts";
 
 const data = [
   { name: "Jan", uv: 4000, pv: 2400 },
   { name: "Feb", uv: 3000, pv: 1398 },
-  { name: "Mar", uv: 2000, pv: 9800 },
+  { name: "Mar", uv: 6000, pv: 9800 },
   { name: "Apr", uv: 2780, pv: 3908 },
   { name: "May", uv: 1890, pv: 4800 },
   { name: "Jun", uv: 2390, pv: 3800 },
   { name: "Jul", uv: 3490, pv: 4300 },
   { name: "Aug", uv: 3490, pv: 4300 },
-  { name: "sept", uv: 3490, pv: 4300 },
-  { name: "oct", uv: 3490, pv: 4300 },
-  { name: "nov", uv: 3490, pv: 4300 },
-  { name: "Dec", uv: 3490, pv: 4300 },
+  { name: "Sept", uv: 1000, pv: 4300 },
+  { name: "Oct", uv: 3490, pv: 4300 },
+  { name: "Nov", uv: 3490, pv: 4300 },
+  { name: "Dec", uv: 9000, pv: 4300 },
 ];
 
 export default function MonthlyCharts() {
   return (
-    <div className="bg-white p-6 rounded-3xl shadow-xl border border-slate-100 w-full h-[450px]">
+    <div className="bg-white p-6 rounded-3xl shadow-xl w-full h-[450px]">
       <div className="flex justify-between items-center mb-6 px-4">
         <div>
           <h2 className="text-xl font-bold text-slate-800">
@@ -41,10 +39,10 @@ export default function MonthlyCharts() {
         </div>
         <div className="flex gap-4 text-xs font-semibold">
           <span className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded-full bg-emerald-500"></span> UV
+            <span className="w-3 h-3 rounded-full bg-[#0f9f6e]"></span> UV
           </span>
           <span className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded-full bg-blue-500"></span> PV
+            <span className="w-3 h-3 rounded-full bg-[#1e40af]"></span> PV
           </span>
         </div>
       </div>
@@ -54,7 +52,6 @@ export default function MonthlyCharts() {
           data={data}
           margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
         >
-          {/* Qurxinta Grid-ka */}
           <CartesianGrid
             strokeDasharray="3 3"
             vertical={false}
@@ -75,7 +72,6 @@ export default function MonthlyCharts() {
             tick={{ fill: "#94a3b8", fontSize: 12 }}
           />
 
-          {/* Tooltip la qurxiyey */}
           <Tooltip
             contentStyle={{
               backgroundColor: "#ffffff",
@@ -95,24 +91,22 @@ export default function MonthlyCharts() {
             iconType="circle"
           />
 
-          {/* Line 1: PV (Buluug) */}
           <Line
             type="monotone"
             dataKey="pv"
-            stroke="#3b82f6"
+            stroke="#1e40af"
             strokeWidth={4}
-            dot={{ r: 4, fill: "#3b82f6", strokeWidth: 2, stroke: "#fff" }}
+            dot={{ r: 4, fill: "#1e40af", strokeWidth: 2, stroke: "#fff" }}
             activeDot={{ r: 8, strokeWidth: 0 }}
             animationDuration={1500}
           />
 
-          {/* Line 2: UV (Cagaar) */}
           <Line
             type="monotone"
             dataKey="uv"
-            stroke="#10b981"
+            stroke="#0f9f6e"
             strokeWidth={4}
-            dot={{ r: 4, fill: "#10b981", strokeWidth: 2, stroke: "#fff" }}
+            dot={{ r: 4, fill: "#0f9f6e", strokeWidth: 2, stroke: "#fff" }}
             activeDot={{ r: 8, strokeWidth: 0 }}
             animationDuration={2000}
           />

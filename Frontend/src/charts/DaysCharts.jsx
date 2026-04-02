@@ -13,20 +13,22 @@ import {
 const data = [
   { day: "Sat", bookings: 40 },
   { day: "Sun", bookings: 30 },
-  { day: "mon", bookings: 60 },
-  { day: "Thu", bookings: 45 },
+  { day: "Mon", bookings: 60 },
+  { day: "Tue", bookings: 55 },
   { day: "Wed", bookings: 90 },
+  { day: "Thu", bookings: 70 }, // ✅ added
+  { day: "Fri", bookings: 65 }, // ✅ added
 ];
 
-// Midab kala duwan si uu chart-ku u noqdo mid nool (Vibrant)
+// 🎯 Dashboard theme colors (emerald + slate mix)
 const COLORS = [
-  "#3b82f6",
-  "#10b981",
-  "#6366f1",
-  "#f59e0b",
-  "#ef4444",
-  "#8b5cf6",
-  "#ec4899",
+  "#1e293b", // slate
+  "#334155",
+  "#475569",
+  "#10b981", // emerald
+  "#059669",
+  "#047857",
+  "#065f46",
 ];
 
 function DaysCharts() {
@@ -49,17 +51,20 @@ function DaysCharts() {
             vertical={false}
             stroke="#f1f5f9"
           />
+
           <XAxis
             dataKey="day"
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#64748b", fontSize: 13, fontWeight: 500 }}
           />
+
           <YAxis
             axisLine={false}
             tickLine={false}
             tick={{ fill: "#94a3b8", fontSize: 12 }}
           />
+
           <Tooltip
             cursor={{ fill: "#f8fafc" }}
             contentStyle={{
@@ -68,7 +73,8 @@ function DaysCharts() {
               boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)",
             }}
           />
-          <Bar dataKey="bookings" radius={[8, 8, 8, 8]} barSize={45}>
+
+          <Bar dataKey="bookings" radius={[8, 8, 0, 0]} barSize={35}>
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}

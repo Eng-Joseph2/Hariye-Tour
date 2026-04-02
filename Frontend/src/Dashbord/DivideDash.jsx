@@ -26,7 +26,8 @@ function DivideDash() {
     axios
       .get("http://localhost:9005/api/readAuth")
       .then((res) => {
-        setAuth(res.data.data || []);
+        console.log(res.data);
+        setAuth(res.data.data);
       })
       .catch((error) => console.log("Auth Fetch Error:", error));
   };

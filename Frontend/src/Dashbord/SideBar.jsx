@@ -24,7 +24,7 @@ const sidebarLinks = [
     path: "/admin/dash/BookingTable",
   },
   {
-    name: "Tour Requests",
+    name: "Tour Accepted",
     icon: <ClipboardList size={20} />,
     path: "/admin/requests",
   },
@@ -42,7 +42,7 @@ function SideBar() {
   const location = useLocation(); // Kani wuxuu ogaanayaa bogga aad joogto
 
   return (
-    <div className="flex flex-col h-[calc(100vh-120px)] justify-between px-3 pb-6">
+    <div className="flex flex-col h-[calc(100vh-120px)] justify-between px-3 pb-12">
       <nav className="space-y-1">
         {sidebarLinks.map((link, index) => {
           const isActive = location.pathname === link.path; // Hubi haddii link-gu uu yahay kan hadda la joogo
