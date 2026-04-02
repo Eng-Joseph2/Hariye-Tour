@@ -2,11 +2,16 @@ import BookingModel from "../Models/BookingModel.js";
 import nodemailer from "nodemailer";
 import { google } from "googleapis";
 
+// import dotenv from "dotenv";
+// dotenv.config();
+
 const OAuth2 = google.auth.OAuth2;
 
-const CLIENT_ID = process.env.Client_ID;
-const CLIENT_SECRET = process.env.Client_secret;
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID; 
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
+
+const REDIRECT_URI = "https://developers.google.com/oauthplayground";
 
 const oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 oauth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
