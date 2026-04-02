@@ -39,7 +39,7 @@ const MyBookings = () => {
       </div>
 
       {/* Bookings List Section */}
-      <div className="max-w-6xl mx-auto px-6 md:px-12 -mt-10 pb-20">
+      <div className="max-w-6xl mx-auto px-6 md:px-12 mt-10 pb-20">
         <div className="space-y-6">
           {bookings.length > 0 ? (
             bookings.map((item) => (
