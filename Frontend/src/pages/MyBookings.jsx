@@ -5,57 +5,27 @@ import axios from "axios";
 
 const MyBookings = () => {
   const navigate = useNavigate();
-  const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  // 1. Fetch live data from the API
-  const fetchMyBookings = useCallback(async () => {
-    const userEmail = localStorage.getItem("userEmail"); // Get logged-in user email
-    
-    if (!userEmail) {
-      setLoading(false);
-      return;
-    }
+  // 1. Initial State: Ka soo aqri xogta localStorage
+  const [bookings, setBookings] = useState(() => {
+    const data = localStorage.getItem("allBookings");
+    return data ? JSON.parse(data) : [];
+  });
 
-    try {
-      const res = await axios.get("http://localhost:9005/api/readBooking");
-      // Filter bookings to only show the ones belonging to this user
-      const myData = res.data.data.filter((b) => b.email === userEmail);
-      setBookings(myData);
-    } catch (error) {
-      console.error("Error fetching bookings:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchMyBookings();
-  }, [fetchMyBookings]);
-
-  // 2. Handle Deletion via API
-  const removeBooking = async (id) => {
-    if (window.confirm("Are you sure you want to cancel this booking?")) {
-      try {
-        await axios.delete(`http://localhost:9005/api/deleteBooking/${id}`);
-        setBookings(bookings.filter((item) => item._id !== id));
-      } catch (error) {
-        alert("Failed to delete booking");
-      }
-    }
+  // 2. Function-ka Tirtirista (Delete)
+  const removeBooking = (id) => {
+    // Ka saar liiska hadda muuqda
+    const filtered = bookings.filter((item) => item.tourId !== id);
+    setBookings(filtered);
+    // Ku cusboonaysii localStorage
+    localStorage.setItem("allBookings", JSON.stringify(filtered));
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <FaSpinner className="animate-spin text-emerald-600" size={40} />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans mt-18">
-      <div className="bg-gradient-to-r from-green-700 to-blue-600 h-[25vh] flex flex-col justify-center text-white">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-green-700 to-blue-600 h-[25vh] flex flex-col  justify-center text-white">
+
         <div className="w-[80%] mx-auto">
           <h1 className="text-4xl font-bold mb-4">My Bookings</h1>
           <p className="text-lg opacity-90">Manage your tours and view confirmed tickets</p>

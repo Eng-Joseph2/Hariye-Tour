@@ -29,14 +29,24 @@ function Navbar() {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:9005/api/logout", {}, { withCredentials: true });
+      await axios.post(
+        "http://localhost:9005/api/logout",
+        {},
+        { withCredentials: true },
+      );
+
+      // Tirtir xogta qofka iyo booking-yada hadda ku jira LocalStorage
       localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      localStorage.removeItem("allBookings"); // Tani waxay hubinaysaa in qofka cusub uu eber ugu yimaado
+
       setUser(null);
       setOpen(false);
       navigate("/login");
     } catch (err) {
       console.log(err);
       localStorage.removeItem("user");
+      localStorage.removeItem("allBookings");
       setUser(null);
       navigate("/login");
     }
@@ -76,26 +86,36 @@ function Navbar() {
               d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
             />
           </svg>
-
-          {/* Text with Gradient Logic */}
-          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-[#22c55e] to-[#059669] bg-clip-text text-transparent">
-            Hariye Tour Agency
-          </span>
+          <span className="text-xl font-bold tracking-tight">Hariye Tour Agency</span>
         </Link>
 
         {/* Desktop Links */}
         <div className="hidden md:flex gap-8 items-center">
-          <NavLink title="Home" to="/" className={navLinkStyles}>Home</NavLink>
-          <NavLink title="Tours" to="/tours" className={navLinkStyles}>Tours</NavLink>
-          <NavLink title="My Bookings" to="/bookings" className={navLinkStyles}>My Bookings</NavLink>
+          <NavLink title="Home" to="/" className={navLinkStyles}>
+            Home
+          </NavLink>
+          <NavLink title="Tours" to="/tours" className={navLinkStyles}>
+            Tours
+          </NavLink>
+          <NavLink title="My Bookings" to="/bookings" className={navLinkStyles}>
+            My Bookings
+          </NavLink>
+          <NavLink title="Dashbord" to="/admin/login" className={navLinkStyles}>
+            Dashbord
+          </NavLink>
 
           {/* Conditional User Section */}
           <div className="flex items-center gap-4 pl-6 ml-2 border-l border-slate-200">
             {user ? (
               <div className="flex items-center gap-3">
                 <div className="flex flex-col items-end">
-                  <span className="text-sm font-bold text-slate-900 leading-none">{user.fullName || user.name}</span>
-                  <button onClick={handleLogout} className="text-[11px] font-bold text-red-500 hover:underline uppercase tracking-wider mt-1">
+                  <span className="text-sm font-bold text-slate-900 leading-none">
+                    {user.fullName || user.name}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="text-[11px] font-bold text-red-500 hover:underline uppercase tracking-wider mt-1"
+                  >
                     Sign Out
                   </button>
                 </div>
@@ -116,7 +136,10 @@ function Navbar() {
         </div>
 
         {/* Mobile Toggle */}
-        <div className="md:hidden text-2xl text-emerald-600 cursor-pointer" onClick={() => setOpen(!open)}>
+        <div
+          className="md:hidden text-2xl text-emerald-600 cursor-pointer"
+          onClick={() => setOpen(!open)}
+        >
           {open ? <FaTimes /> : <FaBars />}
         </div>
 
@@ -126,26 +149,27 @@ function Navbar() {
             <NavLink to="/" onClick={() => setOpen(false)} className={navLinkStyles}>Home</NavLink>
             <NavLink to="/tours" onClick={() => setOpen(false)} className={navLinkStyles}>Tours</NavLink>
             <NavLink to="/bookings" onClick={() => setOpen(false)} className={navLinkStyles}>My Bookings</NavLink>
-
+            
             <div className="w-[85%] pt-6 border-t flex flex-col items-center gap-4">
               {user ? (
                 <>
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-12 h-12 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xl font-bold">
-                      {(user.fullName || user.name || "U").charAt(0).toUpperCase()}
+                       {(user.fullName || user.name || "U").charAt(0).toUpperCase()}
                     </div>
-                    <span className="font-bold text-slate-800">{user.fullName || user.name}</span>
+                    <span className="font-bold text-slate-800">
+                      {user.fullName || user.name}
+                    </span>
                   </div>
-                  <button onClick={handleLogout} className="w-full bg-slate-100 text-slate-700 py-4 rounded-2xl font-bold flex items-center justify-center gap-2">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full bg-slate-100 text-slate-700 py-4 rounded-2xl font-bold flex items-center justify-center gap-2"
+                  >
                     <FaSignOutAlt /> Logout
                   </button>
                 </>
               ) : (
-                <Link
-                  to="/login"
-                  onClick={() => setOpen(false)}
-                  className="block w-full bg-gradient-to-r from-[#22c55e] to-[#059669] text-white py-4 rounded-2xl font-bold text-center shadow-lg hover:opacity-90 transition-opacity"
-                >
+                <Link to="/login" onClick={() => setOpen(false)} className="block w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold text-center">
                   Login
                 </Link>
               )}

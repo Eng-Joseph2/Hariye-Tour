@@ -1,144 +1,94 @@
 import TourModel from "../Models/TourModel.js";
 
+// REGISTER
 export const TourRegsiter = async (req, res) => {
-  console.log("Xogta Body:", req.body);
-  console.log("Xogta File:", req.file);
   try {
-    if (!req.file) {
+    if (!req.file)
       return res
         .status(400)
         .json({ success: false, message: "Please upload an image" });
-    }
-
-    const {
-      title,
-      country,
-      city,
-      desc,
-      price,
-      startDay,
-      endDay,
-      category,
-      Duration,
-      max_Gust,
-      Available_Spots,
-      status,
-      Highlights,
-    } = req.body;
 
     const NewTour = new TourModel({
-      title,
-      country,
-      city,
-      desc,
-      price,
-      // Hubi in taariikhdu ay jirto ka hor intaan Date la saarin
-      startDay: startDay ? new Date(startDay) : null,
-      endDay: endDay ? new Date(endDay) : null,
-      category,
-      Duration,
-      max_Gust,
-      Available_Spots,
-      status,
-      Highlights,
-      image: req.file.filename, // Multer filename
+      ...req.body,
+      image: req.file.filename,
     });
 
     const SaveTour = await NewTour.save();
-    res.status(201).json({
-      success: true,
-      message: "Tour created successfully!",
-      data: SaveTour,
-    });
+    res
+      .status(201)
+      .json({ success: true, message: "Tour created!", data: SaveTour });
   } catch (error) {
-    console.error("Mongoose Error:", error.message);
     res.status(400).json({ success: false, message: error.message });
   }
 };
 
+// READ ALL
 export const ReadAllTour = async (req, res) => {
   try {
-    const read = await TourModel.find();
-    if (!read || read.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No tours found in the database",
-      });
-    }
-    res.status(200).json({
-      success: true,
-      data: read,
-    });
+    const data = await TourModel.find();
+    res.status(200).json({ success: true, data });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// --- GET SINGLE TOUR ---
+// READ SINGLE
 export const ReadSingleTour = async (req, res) => {
   try {
-    const { id } = req.params;
-    const tour = await TourModel.findById(id);
-
-    if (!tour) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Tour not found" });
-    }
-
+    const tour = await TourModel.findById(req.params.id);
+    if (!tour)
+      return res.status(404).json({ success: false, message: "Not found" });
     res.status(200).json({ success: true, data: tour });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// --- DELETE TOUR ---
-export const DeleteTour = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const deletedTour = await TourModel.findByIdAndDelete(id);
+// BOOK SPOT (DECREMENT)
+export const BookTourSpot = async (req, res) => {
+  const tour = await Tour.findById(req.params.id);
 
-    if (!deletedTour) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Tour not found" });
-    }
+  if (!tour) return res.status(404).json({ message: "Not found" });
 
-    res
-      .status(200)
-      .json({ success: true, message: "Tour deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+  if (tour.Available_Spots <= 0) {
+    return res.status(400).json({ message: "No spots left" });
   }
+
+  // 🔥 HOOS U DHIG
+  tour.Available_Spots -= 1;
+
+  // 🔥 HADDII UU NOQDO 0
+  if (tour.Available_Spots <= 0) {
+    tour.status = "InActive";
+  }
+
+  await tour.save();
+
+  res.json({ data: tour });
 };
+
+// UPDATE
 export const UpdateTour = async (req, res) => {
   try {
-    const { id } = req.params;
     const updateData = { ...req.body };
-    if (req.file) {
-      updateData.image = req.file.filename;
-    }
-    if (updateData.startDay)
-      updateData.startDay = new Date(updateData.startDay);
-    if (updateData.endDay) updateData.endDay = new Date(updateData.endDay);
-
-    const updatedTour = await TourModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updatedTour) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Tour not found" });
-    }
-
-    res.status(200).json({ success: true, data: updatedTour });
+    if (req.file) updateData.image = req.file.filename;
+    const updated = await TourModel.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true },
+    );
+    res.status(200).json({ success: true, data: updated });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+// DELETE
+export const DeleteTour = async (req, res) => {
+  try {
+    await TourModel.findByIdAndDelete(req.params.id);
+    res.status(200).json({ success: true, message: "Deleted" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
