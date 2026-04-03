@@ -44,21 +44,43 @@ function Navbar() {
 
   // Helper for active link styling
   const navLinkStyles = ({ isActive }) =>
-    `font-sans font-semibold transition-colors ${
-      isActive ? "text-emerald-600" : "text-slate-600 hover:text-emerald-500"
+    `font-bold transition-colors ${isActive ? "bg-gradient-to-r from-[#22c55e] to-[#059669] bg-clip-text text-transparent" : "text-slate-600 hover:text-emerald-500"
     }`;
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white shadow-sm z-[100] border-b border-slate-100">
       <nav className="mx-auto w-[90%] py-4 flex justify-between items-center lg:w-[80%]">
-        
+
         {/* Logo */}
-        <Link to="/" className="flex items-center text-[#059669] font-display">
-          <svg className="w-10 h-10 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        <Link to="/" className="flex items-center group font-display">
+          {/* SVG with Gradient Logic */}
+          <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none">
+            <defs>
+              <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#22c55e" />
+                <stop offset="100%" stopColor="#059669" />
+              </linearGradient>
+            </defs>
+            <path
+              stroke="url(#logo-gradient)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+            />
+            <path
+              stroke="url(#logo-gradient)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+            />
           </svg>
-          <span className="text-xl font-bold tracking-tight">Hariye Tour Agency</span>
+
+          {/* Text with Gradient Logic */}
+          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-[#22c55e] to-[#059669] bg-clip-text text-transparent">
+            Hariye Tour Agency
+          </span>
         </Link>
 
         {/* Desktop Links */}
@@ -79,13 +101,13 @@ function Navbar() {
                 </div>
                 {/* Avatar Icon */}
                 <div className="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-700 font-bold shadow-sm">
-                   {(user.fullName || user.name || "U").charAt(0).toUpperCase()}
+                  {(user.fullName || user.name || "U").charAt(0).toUpperCase()}
                 </div>
               </div>
             ) : (
               <Link
                 to="/login"
-                className="bg-emerald-600 text-white px-8 py-2.5 rounded-xl hover:bg-emerald-700 transition-all shadow-md font-bold text-sm"
+                className="bg-gradient-to-r from-[#22c55e] to-[#059669] text-white px-8 py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg hover:brightness-105 active:scale-95 font-bold text-sm"
               >
                 Login
               </Link>
@@ -104,13 +126,13 @@ function Navbar() {
             <NavLink to="/" onClick={() => setOpen(false)} className={navLinkStyles}>Home</NavLink>
             <NavLink to="/tours" onClick={() => setOpen(false)} className={navLinkStyles}>Tours</NavLink>
             <NavLink to="/bookings" onClick={() => setOpen(false)} className={navLinkStyles}>My Bookings</NavLink>
-            
+
             <div className="w-[85%] pt-6 border-t flex flex-col items-center gap-4">
               {user ? (
                 <>
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-12 h-12 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xl font-bold">
-                       {(user.fullName || user.name || "U").charAt(0).toUpperCase()}
+                      {(user.fullName || user.name || "U").charAt(0).toUpperCase()}
                     </div>
                     <span className="font-bold text-slate-800">{user.fullName || user.name}</span>
                   </div>
@@ -119,7 +141,11 @@ function Navbar() {
                   </button>
                 </>
               ) : (
-                <Link to="/login" onClick={() => setOpen(false)} className="block w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold text-center">
+                <Link
+                  to="/login"
+                  onClick={() => setOpen(false)}
+                  className="block w-full bg-gradient-to-r from-[#22c55e] to-[#059669] text-white py-4 rounded-2xl font-bold text-center shadow-lg hover:opacity-90 transition-opacity"
+                >
                   Login
                 </Link>
               )}

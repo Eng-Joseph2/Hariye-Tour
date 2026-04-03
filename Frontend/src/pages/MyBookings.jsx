@@ -6,7 +6,7 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import Footer from "./Footer";
+// import Footer from "./Footer";
 
 const MyBookings = () => {
   const navigate = useNavigate();
@@ -96,16 +96,20 @@ const MyBookings = () => {
                   {/* Action Buttons: View, Details & Delete */}
                   <div className="flex items-center justify-between mt-6">
                     <div className="flex gap-3">
-                      <button className="flex items-center gap-2 bg-[#00A884] text-white px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-[#008F6F] transition shadow-sm">
-                        <FaTicketAlt /> View Ticket
-                      </button>
-                      <button
-                        onClick={() => navigate(`/tour/${item.tourId}`)}
-                        className="px-5 py-2.5 rounded-lg text-sm font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 transition"
-                      >
-                        Tour Details
-                      </button>
-                    </div>
+  {/* Gradient Button */}
+  <button className="flex items-center gap-2 bg-gradient-to-r from-[#22c55e] to-[#059669] text-white px-5 py-2.5 rounded-lg text-sm font-bold transition shadow-sm hover:brightness-110 hover:shadow-md active:scale-95">
+    <FaTicketAlt /> 
+    View Ticket
+  </button>
+
+  {/* Outline Button */}
+  <button
+    onClick={() => navigate(`/tour/${item.tourId}`)}
+    className="px-5 py-2.5 rounded-lg text-sm font-bold border border-gray-200 text-gray-600 hover:bg-gray-50 transition active:scale-95"
+  >
+    Tour Details
+  </button>
+</div>
 
                     {/* Delete Button (Trash Icon) */}
                     <button
@@ -126,7 +130,7 @@ const MyBookings = () => {
           )}
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 };

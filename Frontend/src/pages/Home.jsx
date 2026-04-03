@@ -3,7 +3,6 @@ import Hero from "../components/Hero";
 import ExploreCategories from "../components/Explore";
 import PopularTours from "../components/PopularTours";
 import WhyChooseUs from "../components/WhyChooseUs";
-import Footer from "./Footer";
 
 const Home = () => {
   return (
@@ -12,7 +11,6 @@ const Home = () => {
       <ExploreCategories />
       <PopularTours />
       <WhyChooseUs />
-      <Footer />
     </div>
   );
 };

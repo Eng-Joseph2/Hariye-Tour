@@ -3,22 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
+import { HiOutlineMail, HiOutlineLockClosed } from "react-icons/hi";
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:9005/api/auth/google";
-  };
-
-  const handleGithubLogin = () => {
-    window.location.href = "http://localhost:9005/api/auth/github";
-  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -26,151 +16,127 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:9005/api/login",
-        formData,
-      );
-
+      const response = await axios.post("http://localhost:9005/api/login", formData);
       if (response.data.success) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.user));
         window.dispatchEvent(new Event("userLogin"));
-
-        alert("Login Successful!");
         navigate("/");
       } else {
-        alert(res.data.message || "Email ama Password khaldan!");
+        alert(response.data.message || "Email ama Password khaldan!");
       }
     } catch (error) {
-      console.error("Login Error:", error);
       alert("Xogta aad gelisay waa khaldan tahay!");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#f0f9f9] flex flex-col items-center justify-center p-4 font-sans">
-      <div className="flex flex-col items-center mb-8 text-center">
-        <div className="flex items-center text-[#059669] mb-2 mt-10">
-          <svg
-            className="w-10 h-10 mr-2"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-          <span className="text-2xl font-bold text-slate-800 tracking-tight">
-            Hariye Tour <span className="text-emerald-600">Agency</span>
-          </span>
-        </div>
-        <h1 className="text-3xl font-extrabold text-slate-900 mt-4">Welcome</h1>
-        <p className="text-slate-500 mt-2">
-          Please enter your information to log in.
-        </p>
-      </div>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Background Accents */}
+      <div className="absolute top-0 left-0 w-64 h-64 bg-emerald-100 rounded-full blur-3xl opacity-50 -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute bottom-0 right-0 w-64 h-64 bg-blue-100 rounded-full blur-3xl opacity-50 translate-x-1/2 translate-y-1/2"></div>
 
-      {/* Login Card */}
-      <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-slate-100">
-        <div className="grid grid-cols-2 gap-4 mb-8">
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            className="flex items-center justify-center gap-2 py-3 border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all font-bold text-slate-700"
-          >
-            <FcGoogle className="text-2xl" /> Google
-          </button>
-          <button
-            type="button"
-            onClick={handleGithubLogin}
-            className="flex items-center justify-center gap-2 py-3 bg-slate-900 text-white rounded-2xl hover:bg-slate-800 transition-all font-bold"
-          >
-            <FaGithub className="text-2xl" /> GitHub
-          </button>
+      <div className="relative w-full max-w-[400px]">
+        {/* Header */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center p-2 mb-4 bg-white rounded-lg shadow-sm border border-slate-100">
+            <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none">
+              <defs>
+                <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#10b981" />
+                  <stop offset="100%" stopColor="#059669" />
+                </linearGradient>
+              </defs>
+              <path stroke="url(#logo-grad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path stroke="url(#logo-grad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Welcome Back</h2>
+          <p className="text-slate-400 text-sm mt-1 font-medium">Log in to your account</p>
         </div>
 
-        <div className="relative mb-8 text-center">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-slate-100"></div>
-          </div>
-          <span className="relative bg-white px-4 text-xs uppercase text-slate-400 font-bold">
-            or Email & Password
-          </span>
-        </div>
-
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">
-              Email Address
-            </label>
-            <input
-              type="email"
-              name="email"
-              placeholder="example@email.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="w-full px-5 py-4 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all bg-slate-50/50"
-            />
+        {/* The Card */}
+        <div className="bg-white p-6 md:p-8 rounded-xl shadow-xl shadow-slate-200/50 border border-slate-100">
+          
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <button
+              onClick={() => window.location.href = "http://localhost:9005/api/auth/google"}
+              className="flex items-center justify-center gap-2 py-2 border border-slate-200 rounded-md hover:bg-slate-50 transition-all text-sm font-semibold text-slate-600 shadow-sm"
+            >
+              <FcGoogle className="text-lg" /> Google
+            </button>
+            <button
+              onClick={() => window.location.href = "http://localhost:9005/api/auth/github"}
+              className="flex items-center justify-center gap-2 py-2 bg-slate-900 text-white rounded-md hover:bg-black transition-all text-sm font-semibold shadow-sm"
+            >
+              <FaGithub className="text-lg" /> GitHub
+            </button>
           </div>
 
-          <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="w-full px-5 py-4 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all bg-slate-50/50"
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 cursor-pointer group">
-              <input
-                type="checkbox"
-                className="w-5 h-5 accent-emerald-600 rounded-lg cursor-pointer"
-              />
-              <span className="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">
-                Remember me
-              </span>
-            </label>
-            <span className="text-sm text-emerald-600 font-bold hover:text-emerald-700 cursor-pointer">
-              Forget password?
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-100"></div>
+            </div>
+            <span className="relative flex justify-center">
+                <span className="bg-white px-3 text-[10px] uppercase tracking-widest text-slate-400 font-bold">OR</span>
             </span>
           </div>
 
-          <button
-            type="submit"
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-emerald-100 transition-all transform active:scale-95"
-          >
-            Login
-          </button>
-        </form>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Input Email */}
+            <div className="relative">
+              <HiOutlineMail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email Address"
+                required
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-md focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none text-sm transition-all"
+              />
+            </div>
 
-        <p className="text-center mt-10 text-slate-500 font-medium">
-          Do you have account?{" "}
-          <Link
-            to="/signup"
-            className="text-emerald-600 font-bold hover:underline ml-1"
-          >
-            Sign in
-          </Link>
-        </p>
+            {/* Input Password */}
+            <div className="relative">
+              <HiOutlineLockClosed className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" />
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Password"
+                required
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-md focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none text-sm transition-all"
+              />
+            </div>
+
+            <div className="flex items-center justify-between px-0.5">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" className="w-4 h-4 accent-emerald-600 rounded-sm cursor-pointer border-slate-300" />
+                <span className="text-xs text-slate-500 font-medium">Keep me signed in</span>
+              </label>
+              <button type="button" className="text-xs text-emerald-600 font-bold hover:underline">Forgot?</button>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-md shadow-md shadow-emerald-500/10 active:scale-[0.99] transition-all text-sm disabled:opacity-70 mt-2"
+            >
+              {isLoading ? "Signing in..." : "Sign In"}
+            </button>
+          </form>
+
+          <p className="text-center mt-6 text-sm text-slate-500 font-medium">
+            New here? 
+            <Link to="/signup" className="text-emerald-600 font-bold hover:underline ml-1.5 transition-colors">Create Account</Link>
+          </p>
+        </div>
       </div>
     </div>
   );

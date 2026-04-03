@@ -51,7 +51,7 @@ function Hero() {
             placeholder="Search..."
             className="flex-1 px-4 py-3 text-black outline-none"
           />
-          <button className="bg-green-600 text-white px-6 py-3 cursor-pointer">
+          <button className="bg-gradient-to-r from-[#22c55e] to-[#059669] text-white px-6 py-3 cursor-pointer">
             Search
           </button>
         </div>

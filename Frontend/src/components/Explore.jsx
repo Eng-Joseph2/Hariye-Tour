@@ -65,7 +65,7 @@ const categories = [
 
 export default function ExploreCategories() {
   return (
-    <section className="bg-gray-100 py-20 px-6">
+    <section className="bg-gray-100 py-20">
       <h2 className="text-3xl text-center mb-12 font-semibold">
         Explore by Category
       </h2>
