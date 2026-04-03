@@ -138,9 +138,13 @@ function TourTable() {
                     </td>
                     <td className="p-4">
                       <span
-                        className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${tour.available === "yes" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
+                        className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
+                          tour.status === "Active"
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
                       >
-                        {tour.available === "yes" ? "ACTIVE" : "InActive"}
+                        {tour.status === "Active" ? "ACTIVE" : "INACTIVE"}
                       </span>
                     </td>
                     <td className="p-4">

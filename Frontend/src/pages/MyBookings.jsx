@@ -11,33 +11,55 @@ import Footer from "./Footer";
 const MyBookings = () => {
   const navigate = useNavigate();
 
-  // 1. Initial State: Ka soo aqri xogta localStorage
+  // 1. Logic: Kaliya soo qaado booking-yada uu leeyahay qofka hadda Login-ka ah
   const [bookings, setBookings] = useState(() => {
-    const data = localStorage.getItem("allBookings");
-    return data ? JSON.parse(data) : [];
+    const allData = JSON.parse(localStorage.getItem("allBookings") || "[]");
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+
+    if (loggedInUser) {
+      // Filtergaree: Soo saar kaliya xogta leh ID-ga qofka hadda login-ka ah
+      return allData.filter(
+        (item) => item.bookedBy === (loggedInUser._id || loggedInUser.id),
+      );
+    }
+    return []; // Haddii qofna login uusan ahayn waa eber (Zero)
   });
 
   // 2. Function-ka Tirtirista (Delete)
   const removeBooking = (id) => {
-    // Ka saar liiska hadda muuqda
-    const filtered = bookings.filter((item) => item.tourId !== id);
-    setBookings(filtered);
-    // Ku cusboonaysii localStorage
-    localStorage.setItem("allBookings", JSON.stringify(filtered));
+    const allData = JSON.parse(localStorage.getItem("allBookings") || "[]");
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+
+    // Ka tirtir dhammaan xogta meesha uu ku jiro tour-kan iyo user-kan
+    const updatedAllData = allData.filter(
+      (item) =>
+        !(
+          item.tourId === id &&
+          item.bookedBy === (loggedInUser?._id || loggedInUser?.id)
+        ),
+    );
+
+    // Ku celis LocalStorage
+    localStorage.setItem("allBookings", JSON.stringify(updatedAllData));
+
+    // Cusboonaysii interface-ka si uu qofka u arko wixii u haray
+    setBookings(
+      updatedAllData.filter(
+        (item) => item.bookedBy === (loggedInUser?._id || loggedInUser?.id),
+      ),
+    );
   };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans mt-18">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-green-700 to-blue-600 h-[25vh] flex flex-col  justify-center text-white">
-
         <div className="w-[80%] mx-auto">
           <h1 className="text-4xl font-bold mb-4">My Bookings</h1>
           <p className="text-lg opacity-90">
             Manage your tours and view tickets
           </p>
         </div>
-
       </div>
 
       {/* Bookings List Section */}

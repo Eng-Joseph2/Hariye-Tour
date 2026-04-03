@@ -82,20 +82,13 @@ const Login = () => {
 
       {/* Login Card */}
       <div className="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-md border border-slate-100">
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="grid w-full  mb-8">
           <button
             type="button"
             onClick={handleGoogleLogin}
-            className="flex items-center justify-center gap-2 py-3 border border-slate-200 rounded-2xl hover:bg-slate-50 transition-all font-bold text-slate-700"
+            className="flex items-center  justify-center gap-2 py-3 border border-slate-200  rounded-2xl hover:bg-slate-50 transition-all font-bold text-slate-700"
           >
-            <FcGoogle className="text-2xl" /> Google
-          </button>
-          <button
-            type="button"
-            onClick={handleGithubLogin}
-            className="flex items-center justify-center gap-2 py-3 bg-slate-900 text-white rounded-2xl hover:bg-slate-800 transition-all font-bold"
-          >
-            <FaGithub className="text-2xl" /> GitHub
+            <FcGoogle className="text-2xl " /> Google
           </button>
         </div>
 

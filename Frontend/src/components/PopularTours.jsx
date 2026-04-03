@@ -51,14 +51,17 @@ export default function PopularTours() {
 
                 <div className="p-4">
                   <h3 className="font-semibold text-lg">{tour.title}</h3>
-                  <div className="flex items-center text-gray-500 text-sm mt-1 mb-3">
-                    <FaMapMarkerAlt className="mr-2" />
-                    {tour.country}
+                  <div className="flex justify-between px-4">
+                    <div className="flex items-center text-gray-500 text-sm mt-1 mb-3">
+                      <FaMapMarkerAlt className="mr-2" />
+                      {tour.country}
+                    </div>
+                    <span className="text-green-500">{tour.status}</span>
                   </div>
 
                   <div className="flex justify-between">
                     <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-                      {tour.days} Days
+                      {tour.Duration || 1} Days
                     </span>
                     <span className="bg-blue-100 text-blue-600 text-xs px-3 py-1 rounded-full capitalize">
                       {tour.category}

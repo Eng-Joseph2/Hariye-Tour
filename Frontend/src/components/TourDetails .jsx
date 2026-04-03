@@ -39,39 +39,61 @@ export default function TourDetails() {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
+  // ✅ CHECK IF TOUR COMPLETED
+  const isCompleted =
+    tour?.status === "InActive" ||
+    tour?.Available_Spots <= 0 ||
+    tour?.max_Gust <= 0;
+
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
     if (!tour) return;
 
-    // 1. Prepare data for MongoDB (Matches your BookingModel)
-    const mongoData = {
-      full_name: userData.name,
-      email: userData.email,
-      gender: userData.gender,
-    };
+    // ✅ EXTRA SAFETY CHECK
+    if (isCompleted) {
+      alert("Sorry, this tour is already completed");
+      return;
+    }
+
+    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+
+    if (!loggedInUser) {
+      alert("Fadlan marka hore Login soo dheh!");
+      navigate("/login");
+      return;
+    }
 
     try {
-      // 2. Send to Backend API
-      await axios.post("http://localhost:9005/api/bookingRegister", mongoData);
-
-      // 3. Handle LocalStorage for the MyBookings page
       const existingBookings = JSON.parse(
         localStorage.getItem("allBookings") || "[]",
       );
 
       const isAlreadyBooked = existingBookings.some(
-        (item) => item.tourId === (tour._id || id),
+        (item) =>
+          item.tourId === (tour._id || id) &&
+          item.bookedBy === (loggedInUser._id || loggedInUser.id),
       );
 
       if (isAlreadyBooked) {
-        alert("Safarkan horay ayaad u ballansatay!");
+        alert(
+          "Safarkan horay ayaad u ballansatay, hal mar ka badan lama ogola!",
+        );
         navigate("/bookings");
         return;
       }
 
+      // ✅ BACKEND CALL
+      await axios.post("http://localhost:9005/api/bookingRegister", {
+        full_name: userData.name,
+        email: userData.email,
+        gender: userData.gender,
+        tourId: tour._id || id,
+      });
+
       const newLocalBooking = {
         ...userData,
         tourId: tour._id || id,
+        bookedBy: loggedInUser._id || loggedInUser.id,
         title: tour.title,
         price: tour.price,
         image: tour.image,
@@ -84,11 +106,17 @@ export default function TourDetails() {
         JSON.stringify([...existingBookings, newLocalBooking]),
       );
 
-      alert("Success! Your booking has been confirmed.");
+      // ✅ REAL-TIME UPDATE TOUR DATA
+      const updatedTour = await axios.get(
+        `http://localhost:9005/api/readSingleTour/${id}`,
+      );
+      setTour(updatedTour.data.data);
+
+      alert("Guul! Ballantaada waa la xaqiijiyay.");
       navigate("/bookings");
     } catch (err) {
       console.error("Booking Error:", err);
-      alert("Qalad ayaa dhacay. Fadlan isku day markale.");
+      alert("Qalad ayaa dhacay xiligii ballansashada.");
     }
   };
 
@@ -125,6 +153,7 @@ export default function TourDetails() {
             <h1 className="text-4xl font-extrabold text-slate-800 mb-4">
               {tour.title}
             </h1>
+
             <div className="flex flex-wrap gap-6 text-slate-500 mb-8">
               <span className="flex items-center gap-2">
                 <FaMapMarkerAlt className="text-emerald-500" />
@@ -166,79 +195,98 @@ export default function TourDetails() {
               <Highlights />
             </div>
 
-            {!showForm ? (
+            {/* ✅ SHOW MESSAGE IF COMPLETED */}
+            {isCompleted && (
+              <div className="mb-6 text-center text-red-500 font-semibold">
+                Sorry, this tour is already completed
+              </div>
+            )}
+
+            {!showForm && !isCompleted ? (
               <button
                 onClick={() => setShowForm(true)}
-                className="w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold hover:bg-emerald-700 shadow-lg transition-all"
+                disabled={isCompleted}
+                className={`w-full py-4 rounded-2xl font-bold shadow-lg transition-all ${
+                  isCompleted
+                    ? "bg-gray-400 cursor-not-allowed text-white"
+                    : "bg-emerald-600 hover:bg-emerald-700 text-white"
+                }`}
               >
-                Book This Tour Now
+                {isCompleted ? "Tour Completed" : "Book This Tour Now"}
               </button>
             ) : (
-              <form
-                onSubmit={handleBookingSubmit}
-                className="bg-slate-50 p-8 rounded-3xl border-2 border-emerald-100 animate-in fade-in slide-in-from-bottom-4 duration-500"
-              >
-                <h3 className="text-2xl font-bold mb-6 text-slate-800">
-                  Your Details
-                </h3>
-                <div className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-bold text-slate-600 mb-2">
-                      Full Name
-                    </label>
-                    <input
-                      required
-                      name="name"
-                      type="text"
-                      className="w-full p-4 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 bg-white"
-                      placeholder="Enter your full name"
-                      onChange={handleInputChange}
-                    />
+              !isCompleted && (
+                <form
+                  onSubmit={handleBookingSubmit}
+                  className="bg-slate-50 p-8 rounded-3xl border-2 border-emerald-100 animate-in fade-in slide-in-from-bottom-4 duration-500"
+                >
+                  <h3 className="text-2xl font-bold mb-6 text-slate-800">
+                    Your Details
+                  </h3>
+
+                  <div className="space-y-5">
+                    <div>
+                      <label className="block text-sm font-bold text-slate-600 mb-2">
+                        Full Name
+                      </label>
+                      <input
+                        required
+                        name="name"
+                        type="text"
+                        className="w-full p-4 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 bg-white"
+                        placeholder="Enter your full name"
+                        onChange={handleInputChange}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-bold text-slate-600 mb-2">
+                        Email Address
+                      </label>
+                      <input
+                        required
+                        name="email"
+                        type="email"
+                        className="w-full p-4 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 bg-white"
+                        placeholder="example@email.com"
+                        onChange={handleInputChange}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-bold text-slate-600 mb-2">
+                        Gender
+                      </label>
+                      <select
+                        name="gender"
+                        className="w-full p-4 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 bg-white"
+                        onChange={handleInputChange}
+                      >
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+
+                    <div className="flex gap-4 pt-4">
+                      <button
+                        type="button"
+                        onClick={() => setShowForm(false)}
+                        className="flex-1 bg-white border border-slate-200 text-slate-600 py-4 rounded-xl font-bold hover:bg-slate-100 transition-colors"
+                      >
+                        Cancel
+                      </button>
+
+                      <button
+                        type="submit"
+                        className="flex-[2] bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 shadow-md transition-all"
+                      >
+                        Confirm & Pay
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-bold text-slate-600 mb-2">
-                      Email Address
-                    </label>
-                    <input
-                      required
-                      name="email"
-                      type="email"
-                      className="w-full p-4 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 bg-white"
-                      placeholder="example@email.com"
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold text-slate-600 mb-2">
-                      Gender
-                    </label>
-                    <select
-                      name="gender"
-                      className="w-full p-4 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 bg-white"
-                      onChange={handleInputChange}
-                    >
-                      <option value="Male">Male</option>
-                      <option value="Female">Female</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                  <div className="flex gap-4 pt-4">
-                    <button
-                      type="button"
-                      onClick={() => setShowForm(false)}
-                      className="flex-1 bg-white border border-slate-200 text-slate-600 py-4 rounded-xl font-bold hover:bg-slate-100 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="flex-[2] bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700 shadow-md transition-all"
-                    >
-                      Confirm & Pay
-                    </button>
-                  </div>
-                </div>
-              </form>
+                </form>
+              )
             )}
           </div>
         </div>

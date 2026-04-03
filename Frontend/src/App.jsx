@@ -16,6 +16,8 @@ import MyBookings from "./pages/MyBookings";
 import AddBooking from "./pages/AddBooking";
 import DashbordLogin from "./pages/DashbordLogin";
 import BookingTable from "./Dashbord/Booking/BookingTable";
+import Setting from "./Dashbord/setting";
+import CustomerTable from "./pages/customerTable";
 
 const App = () => {
   // Hubi haddii qofku login yahay si aan u go'aamino bogga koowaad
@@ -27,6 +29,7 @@ const App = () => {
   useEffect(() => {
     const checkUser = () => {
       const saved = localStorage.getItem("user");
+      console.log(user);
       setUser(saved ? JSON.parse(saved) : null);
     };
     window.addEventListener("userLogin", checkUser);
@@ -62,6 +65,8 @@ const App = () => {
         <Route path="/admin/dash/Tour" element={<TourTable />} />
         <Route path="/admin/dash/Tour/Add-tour" element={<AddTour />} />
         <Route path="/admin/dash/BookingTable" element={<BookingTable />} />
+        <Route path="/admin/settings" element={<Setting />} />
+        <Route path="/admin/customers" element={<CustomerTable />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,6 +1,7 @@
 import exporess from "express";
 import UploadImage from "../middleware/uplodImage.js";
 import {
+  BookTourSpot,
   DeleteTour,
   ReadAllTour,
   ReadSingleTour,
@@ -14,4 +15,5 @@ router.get("/readAllTour", ReadAllTour);
 router.get("/readSingleTour/:id", ReadSingleTour);
 router.put("/updateTour/:id", UploadImage.single("image"), UpdateTour);
 router.delete("/deleteTour/:id", DeleteTour);
+router.put("/bookTourSpot/:id", BookTourSpot);
 export default router;
