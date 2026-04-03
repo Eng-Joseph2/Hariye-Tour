@@ -41,7 +41,7 @@ function Hero() {
 
         <p className="text-sm sm:text-base md:text-lg max-w-xl mb-6">
           Discover breathtaking landscapes, rich cultures, and unforgettable
-          adventures across Somalia, Kenya, Ethiopia, and Tanzania
+          adventures across Somalia, Kenya, Ethiopia, Tanzania, and More.
         </p>
 
         {/* Search */}
