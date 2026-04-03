@@ -1,16 +1,15 @@
 import express from "express";
-import { createBooking, ReadBooking } from "../Controller/BookingController.js";
 import { updateBookingStatus } from "../Controller/updateBookingStatus.js";
+import {
+  createBooking,
+  deleteBooking,
+  readBooking,
+} from "../Controller/BookingController.js";
 
 const router = express.Router();
-
-// Si macaamiisha u diiwaangashadaan
 router.post("/bookingRegister", createBooking);
-
-// Si Admin-ka u arko liiska
-router.get("/readBooking", ReadBooking);
-
-// Si loo aqbalo ama loo diido (Email-ka halkan ayuu ku jiraa)
+router.get("/readBooking", readBooking);
 router.put("/updateBookingStatus/:id", updateBookingStatus);
+router.delete("/deleteBooking/:id", deleteBooking);
 
 export default router;
