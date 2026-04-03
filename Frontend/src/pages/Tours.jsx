@@ -60,63 +60,63 @@ const Tours = () => {
 
       <div className="max-w-[1400px] mx-auto px-4 py-12 flex flex-col md:flex-row gap-8">
         {/* SIDEBAR - Filter Section */}
-<aside className="w-full md:w-1/4 bg-white/80 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 h-fit sticky top-24 transition-all duration-300">
-  <div className="flex flex-col gap-8">
-    
-    {/* Header (Optional but recommended) */}
-    <div>
-      <h3 className="text-lg font-bold text-slate-800">Filters</h3>
-      <p className="text-xs text-slate-500">Refine your search results</p>
-    </div>
+        <aside className="w-full md:w-1/4 bg-white/80 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 h-fit sticky top-24 transition-all duration-300">
+          <div className="flex flex-col gap-8">
 
-    <div className="space-y-5">
-      {/* Country Select */}
-      <div className="group">
-        <CustomSelect
-          label="Country"
-          value={country}
-          onChange={(val) => setCountry(val)}
-          options={["All Countries", "Somalia", "Kenya", "Tanzania", "Ethiopia", "Uganda", "Rwanda", "Djibouti", "South Sudan", "Eritrea", "Burundi"]}
-        />
-      </div>
+            {/* Header (Optional but recommended) */}
+            <div>
+              <h3 className="text-lg font-bold text-slate-800">Filters</h3>
+              <p className="text-xs text-slate-500">Refine your search results</p>
+            </div>
 
-      {/* Category Select */}
-      <div className="group">
-        <CustomSelect
-          label="Category"
-          value={category}
-          onChange={(val) => setCategory(val)}
-          options={["All Categories", "Nature", "Beaches", "Forests", "Farms", "Historical", "Restaurants"]}
-        />
-      </div>
+            <div className="space-y-5">
+              {/* Country Select */}
+              <div className="group">
+                <CustomSelect
+                  label="Country"
+                  value={country}
+                  onChange={(val) => setCountry(val)}
+                  options={["All Countries", "Somalia", "Kenya", "Tanzania", "Ethiopia", "Uganda", "Rwanda", "Djibouti", "South Sudan", "Eritrea", "Burundi"]}
+                />
+              </div>
 
-      {/* Price Select */}
-      <div className="group">
-        <CustomSelect
-          label="Price Range"
-          value={priceRange}
-          onChange={(val) => setPriceRange(val)}
-          options={["All Prices", "$0 - $500", "$501 - $1000", "$1001 - $5000"]}
-        />
-      </div>
-    </div>
+              {/* Category Select */}
+              <div className="group">
+                <CustomSelect
+                  label="Category"
+                  value={category}
+                  onChange={(val) => setCategory(val)}
+                  options={["All Categories", "Nature", "Beaches", "Forests", "Farms", "Historical", "Restaurants"]}
+                />
+              </div>
 
-    {/* Reset Action */}
-    <button
-      onClick={resetFilters}
-      className="w-full py-3 px-4 border-2 border-green-600/20 text-green-700 rounded-xl hover:bg-green-600 hover:text-white hover:border-green-600 active:scale-[0.98] transition-all duration-200 font-semibold text-sm flex items-center justify-center gap-2 group"
-    >
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        className="h-4 w-4 group-hover:rotate-[-45deg] transition-transform" 
-        fill="none" viewBox="0 0 24 24" stroke="currentColor"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-      </svg>
-      Reset Filters
-    </button>
-  </div>
-</aside>
+              {/* Price Select */}
+              <div className="group">
+                <CustomSelect
+                  label="Price Range"
+                  value={priceRange}
+                  onChange={(val) => setPriceRange(val)}
+                  options={["All Prices", "$0 - $500", "$501 - $1000", "$1001 - $5000"]}
+                />
+              </div>
+            </div>
+
+            {/* Reset Action */}
+            <button
+              onClick={resetFilters}
+              className="w-full py-3 px-4 border-2 border-green-600/20 text-green-700 rounded-xl hover:bg-green-600 hover:text-white hover:border-green-600 active:scale-[0.98] transition-all duration-200 font-semibold text-sm flex items-center justify-center gap-2 group"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4 group-hover:rotate-[-45deg] transition-transform"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Reset Filters
+            </button>
+          </div>
+        </aside>
 
         {/* TOURS GRID */}
         <div className="w-full md:w-3/4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

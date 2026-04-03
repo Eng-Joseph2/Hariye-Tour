@@ -1,48 +1,45 @@
-import BookingModel from "../Models/BookingModel.js";
+import nodemailer from 'nodemailer';
 
-// A. Function-ka lagu abuurayo Booking cusub (Create)
-export const createBooking = async (req, res) => {
+export const updateBookingStatus = async (req, res) => {
   try {
-    // Waxaan isla markiiba ka dhex abuureynaa database-ka xogta ka timaada req.body
-    const newBooking = new BookingModel(req.body);
-    await newBooking.save();
+    const { id } = req.params;
+    const { status } = req.body;
 
-    res.status(201).json({
-      success: true,
-      message: "Booking-ka waa la diiwaangeliyey si guul ah. ✅",
-      data: newBooking,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Cillad ayaa dhacday markii la diiwaangelinayay.",
-      error: error.message,
-    });
-  }
-};
+    const booking = await BookingModel.findByIdAndUpdate(id, { status }, { new: true }).populate("tourId");
 
-// B. Function-ka lagu soo akhrinayo dhamaan Bookings-ka (Read)
-export const ReadBooking = async (req, res) => {
-  try {
-    // Waxaan soo helnaa dhamaan xogta ku jirta BookingModel
-    const read = await BookingModel.find().sort({ createdAt: -1 }); // Wuxuu soo horaysiinayaa kuwa cusub
-
-    if (!read || read.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Maba jiraan wax Bookings ah oo hadda diiwaangashan.",
+    if (status === "allowed") {
+      // 1. Setup Email Transporter
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: { user: 'your-email@gmail.com', pass: 'your-app-password' }
       });
+
+      // 2. Email Content
+      const mailOptions = {
+        from: '"Hariye Tour Agency" <your-email@gmail.com>',
+        to: booking.email,
+        subject: "Booking Confirmed - View Your Ticket",
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; padding: 20px; border: 1px solid #eee;">
+            <h2 style="color: #059669;">Booking Confirmed!</h2>
+            <p>Hi ${booking.full_name},</p>
+            <p>We have received your payment. Your booking for <strong>${booking.tourId.title}</strong> is now officially confirmed.</p>
+            <div style="margin: 30px 0;">
+              <a href="http://localhost:5173/ticket/${booking.tourId._id}" 
+                 style="background: #059669; color: white; padding: 12px 25px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                 View My Digital Ticket
+              </a>
+            </div>
+            <p style="font-size: 12px; color: #666;">If the button doesn't work, login to your dashboard on our website.</p>
+          </div>
+        `
+      };
+
+      await transporter.sendMail(mailOptions);
     }
 
-    res.status(200).json({
-      success: true,
-      data: read,
-    });
+    res.status(200).json({ success: true, message: "Status updated and email sent" });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Cillad ayaa dhacday soo akhrinta xogta.",
-      error: error.message,
-    });
+    res.status(500).json({ success: false, error: error.message });
   }
 };

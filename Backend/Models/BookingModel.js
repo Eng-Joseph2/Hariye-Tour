@@ -5,6 +5,8 @@ const BookingSchema = mongoose.Schema(
     full_name: { type: String, required: true },
     email: { type: String, required: true },
     gender: { type: String, required: true },
+    // LINK TO TOUR
+    tourId: { type: mongoose.Schema.Types.ObjectId, ref: "Tour", required: true },
     status: {
       type: String,
       enum: ["pending", "allowed", "rejected"],

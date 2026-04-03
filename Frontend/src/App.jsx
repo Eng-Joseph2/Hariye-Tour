@@ -5,7 +5,7 @@ import Home from "./pages/Home";
 import Tours from "./pages/Tours";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import TourDetails from "./components/TourDetails ";
+import TourDetails from "./components/TourDetails";
 import AuthSuccess from "./pages/AuthSuccess";
 import AdminDashboard from "./pages/AdminDashboard";
 import MainLayout from "./layout/MainLayout";
@@ -16,6 +16,7 @@ import MyBookings from "./pages/MyBookings";
 import AddBooking from "./pages/AddBooking";
 import DashbordLogin from "./pages/DashbordLogin";
 import BookingTable from "./Dashbord/Booking/BookingTable";
+import Ticket from "./pages/Ticket";
 
 const App = () => {
   // Hubi haddii qofku login yahay si aan u go'aamino bogga koowaad
@@ -50,6 +51,7 @@ const App = () => {
           <Route path="/bookings/addBook" element={<AddBooking />} />
           <Route path="/tours" element={<Tours />} />
           <Route path="/tours/:id" element={<TourDetails />} />
+          <Route path="/ticket/:id" element={<Ticket />} />
         </Route>
 
         {/* --- AUTH & ADMIN (NO NAVBAR) --- */}
