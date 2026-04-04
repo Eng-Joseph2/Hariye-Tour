@@ -8,7 +8,7 @@ import {
   Info,
   UserCheck,
   Loader2,
-  RefreshCw, // Added for the update icon
+  RefreshCw,
 } from "lucide-react";
 import axios from "axios";
 
@@ -17,6 +17,7 @@ function BookingTable() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
 
+  // 1. Function-ka xogta keenaya (wuxuu sameynayaa reverse)
   const fetchBookings = useCallback(async () => {
     try {
       const res = await axios.get("http://localhost:9005/api/readBooking");
@@ -29,8 +30,18 @@ function BookingTable() {
     }
   }, []);
 
+  // 2. useEffect leh Automatic Refresh (Interval)
   useEffect(() => {
+    // Marka ugu horeysa keen xogta
     fetchBookings();
+
+    // 5-tii ilbiriqsi kasta xogta soo cusboonaysii si toos ah
+    const autoRefresh = setInterval(() => {
+      fetchBookings();
+    }, 5000);
+
+    // Nadiifi interval-ka marka laga baxo bogga
+    return () => clearInterval(autoRefresh);
   }, [fetchBookings]);
 
   const handleStatusUpdate = async (id, newStatus) => {
@@ -143,12 +154,10 @@ function BookingTable() {
                           />
                         ) : (
                           <>
-                            {/* IF STATUS IS ALREADY SET, SHOW UPDATE BUTTON */}
                             {booking.status === "allowed" ||
                             booking.status === "rejected" ? (
                               <button
                                 onClick={() => {
-                                  // This resets it to allow the admin to pick a new choice
                                   const nextStatus =
                                     booking.status === "allowed"
                                       ? "rejected"
@@ -160,7 +169,6 @@ function BookingTable() {
                                 <RefreshCw size={14} /> Update
                               </button>
                             ) : (
-                              /* OTHERWISE SHOW CONFIRM/REJECT */
                               <>
                                 <button
                                   onClick={() =>
