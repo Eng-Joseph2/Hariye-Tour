@@ -127,11 +127,10 @@ const MyBookings = () => {
 
                     <div className="flex flex-col items-end gap-6">
                       <span
-                        className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider ${
-                          item.status === "allowed"
+                        className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider ${item.status === "allowed"
                             ? "bg-emerald-50 text-emerald-600"
                             : "bg-amber-50 text-amber-600"
-                        }`}
+                          }`}
                       >
                         {item.status === "allowed"
                           ? "Confirmed"
@@ -149,7 +148,7 @@ const MyBookings = () => {
                       {item.status === "allowed" ? (
                         <button
                           onClick={() =>
-                            navigate(`/ticket/${item.tourId?._id}`)
+                            navigate(`/ticket/${item._id}`)
                           }
                           className="flex items-center gap-2 bg-gradient-to-r from-[#22c55e] to-[#059669] text-white px-5 py-2.5 rounded-lg text-sm font-bold transition shadow-sm hover:brightness-110"
                         >

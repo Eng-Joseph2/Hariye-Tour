@@ -19,6 +19,7 @@ import BookingTable from "./Dashbord/Booking/BookingTable";
 import Setting from "./Dashbord/Setting";
 import CustomerTable from "./pages/CustomerTable";
 import Ticket from "./pages/Ticket";
+import VerifyTicket from "./pages/VerifyTicket";
 
 const App = () => {
   // 1. Hubi user-ka si ammaan ah (Safe JSON parsing)
@@ -81,6 +82,7 @@ const App = () => {
         <Route path="/admin/dash/BookingTable" element={<BookingTable />} />
         <Route path="/admin/settings" element={<Setting />} />
         <Route path="/admin/customers" element={<CustomerTable />} />
+        <Route path="/admin/verify-ticket/:id" element={<VerifyTicket />} />
 
         {/* --- 404 OR REDIRECT --- */}
         <Route path="*" element={<Navigate to="/" replace />} />

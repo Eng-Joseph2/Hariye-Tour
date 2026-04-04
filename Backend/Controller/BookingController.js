@@ -112,3 +112,56 @@ export const deleteBooking = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
+
+
+
+export const getSingleBooking = async (req, res) => {
+  const { id } = req.params;
+  try {
+    // 1. Use findById (NOT findByIdAndUpdate)
+    // 2. Use .populate("tourId")
+    const booking = await BookingModel.findById(id).populate("tourId");
+    
+    if (!booking) {
+      return res.status(404).json({ success: false, message: "Booking not found" });
+    }
+    
+    res.status(200).json({ success: true, data: booking });
+  } catch (error) {
+    console.error("Single Booking Error:", error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+export const verifyAndUseTicket = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const booking = await BookingModel.findById(id);
+
+    if (!booking) {
+      return res.status(404).json({ success: false, message: "Ticket not found." });
+    }
+
+    // SECURITY CHECK: Only "allowed" tickets can be used
+    if (booking.status === "used") {
+      return res.status(400).json({ success: false, message: "CRITICAL: This ticket has already been used!" });
+    }
+
+    if (booking.status !== "allowed") {
+      return res.status(400).json({ success: false, message: "This ticket is not yet approved for use." });
+    }
+
+    // Update status to 'used'
+    booking.status = "used";
+    await booking.save();
+
+    res.status(200).json({ 
+      success: true, 
+      message: "Check-in Successful! Ticket is now marked as USED.",
+      data: booking 
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
