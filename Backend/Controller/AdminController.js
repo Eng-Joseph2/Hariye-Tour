@@ -1,93 +1,67 @@
-import bcrypt from "bcryptjs";
 import AdminModel from "../Models/AdminModel.js";
 import jwt from "jsonwebtoken";
-export const getDefaultAdmin = async (req, res) => {
+import bcrypt from "bcryptjs";
+
+export const register = async (req, res) => {
   try {
-    const existingAdmin = await AdminModel.findOne({
-      email: "Admin@gmail.com",
-    });
+    const { email, password, role } = req.body;
+    const existingAdmin = await AdminModel.findOne({ email });
     if (existingAdmin) {
-      return res.status(200).json({
-        success: true,
-        admin: existingAdmin,
+      return res.status(400).json({
+        success: false,
+        message: "Email-kan horay ayaa loo diwaangeliyey",
       });
     }
 
-    const hashedPassword = await bcrypt.hash("123456", 10);
-    const newAdmin = new AdminModel({
-      username: "Maxamed Axmed",
-      email: "Admin@gmail.com",
-      password: hashedPassword,
-      role: "Admin",
-    });
-
-    await newAdmin.save();
-
-    res.status(201).json({
-      success: true,
-      admin: newAdmin,
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
-export const logoutAdmin = async (req, res) => {
-  try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Si guul ah ayaad uga baxday (Logged out).",
-    });
+    const newAdmin = await AdminModel.create({ email, password, role });
+    res.status(201).json({ success: true, message: newAdmin });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Logout-ka wuu fashilmay!", error: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// Hubi inaad install gareysay: npm install jsonwebtoken
-
-export const loginAdmin = async (req, res) => {
-  const { email, password } = req.body;
+// --- LOGIN ADMIN ---
+export const login = async (req, res) => {
   try {
-    // 1. Ma jiraa admin email-kan leh?
+    const { email, password } = req.body;
+
+    // 1. Raadi admin-ka
     const admin = await AdminModel.findOne({ email });
     if (!admin) {
       return res
         .status(404)
-        .json({ success: false, message: "Admin-kan lama helin!" });
+        .json({ success: false, message: "Admin-kan lama helin" });
     }
 
-    // 2. Password-ka ma sax yahay?
+    // 2. Hubi password-ka (Isbarbardhig kan hashed ah iyo kan lasoo qoray)
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
       return res
-        .status(400)
-        .json({ success: false, message: "Password-ka waa khaldan yahay!" });
+        .status(401)
+        .json({ success: false, message: "Password-ka waa khalad" });
     }
 
     // 3. Samee Token (JWT)
-    const token = jwt.sign({ id: admin._id }, "SIR_WA_LO_YAHAY", {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { id: admin._id, role: admin.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" },
+    );
 
     res.status(200).json({
       success: true,
       token,
-      admin: {
-        id: admin._id,
-        username: admin.username,
-        email: admin.email,
-      },
+      admin: { id: admin._id, email: admin.email, role: admin.role },
+      message: "Si guul leh ayaad u gashay",
     });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ... (Koodkaagii hore ee getDefaultAdmin iyo logoutAdmin halkooda ha joogaan)
+// --- LOGOUT ---
+export const logout = (req, res) => {
+  res
+    .status(200)
+    .json({ success: true, message: "Si guul leh ayaad u baxday" });
+};

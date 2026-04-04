@@ -7,48 +7,40 @@ function DashbordLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  const allowedAdmins = [
-    { email: "mohamed22@gmail.com", password: "maxamed123" },
-    { email: "abdiqani@gmail.com", password: "abdiqani123" },
-  ];
 
   const handleAdminLogin = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
-    // 1. Hubi inuu qofku ku jiro liiska Admin-ka (In-memory check)
-    const isAdmin = allowedAdmins.find(
-      (admin) => admin.email === email && admin.password === password,
-    );
-
-    // 2. Haddii aan la helin, halkan ku jooji
-    if (!isAdmin) {
-      setError("Email ama Password-ka waa khaldan yihiin.");
-      return;
-    }
-
-    // 3. Haddii la helay, u gudbi Backend-ka si loo helo Token-ka saxda ah
     try {
-      const res = await axios.post("http://localhost:9005/api/login", {
+      // Xogta waxay si toos ah ugu socotaa Backend-ka si looga soo xaqiijiyo Database-ka
+      const res = await axios.post("http://localhost:9005/api/admin-login", {
         email,
         password,
       });
 
       if (res.data.success) {
+        // Kaydi xogta admin-ka iyo token-ka JWT ee server-ka ka yimid
         localStorage.setItem("user", JSON.stringify(res.data.user));
-        localStorage.setItem("token", res.data.token); // Keydi token-ka
+        localStorage.setItem("token", res.data.token);
+
+        // Cusboonaysii qofka gudaha ku jira (Auth state)
         window.dispatchEvent(new Event("userLogin"));
 
-        alert("Sucess Admin !");
-        navigate("/admin-dash"); // U gudbi halka loo baahnaa
-      } else {
-        setError("we don't see anything");
+        alert("Login Successful! Soo dhawoow Admin.");
+        navigate("/admin-dash");
       }
     } catch (err) {
-      setError("server error.");
-      console.log(err);
+      // Halkan waxaa lagu soo bandhigayaa error-ka saxda ah ee Backend-ka ka yimaada
+      const errorMessage =
+        err.response?.data?.message || "Email ama Password khaldan.";
+      setError(errorMessage);
+      console.log("Admin Login Error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -145,9 +137,10 @@ function DashbordLogin() {
 
           <button
             type="submit"
-            className="w-full bg-[#059669] hover:bg-[#047857] text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-100 transition-all active:scale-[0.98] mt-4"
+            disabled={loading}
+            className="w-full bg-[#059669] hover:bg-[#047857] text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-100 transition-all active:scale-[0.98] mt-4 disabled:opacity-50"
           >
-            GO to Dashboard
+            {loading ? "Fadlan sug..." : "GO to Dashboard"}
           </button>
         </form>
       </div>

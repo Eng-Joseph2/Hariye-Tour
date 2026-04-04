@@ -12,12 +12,12 @@ const data = [
   {
     name: "Boys",
     value: 450,
-    fill: "#1e293b", // dark slate
+    fill: "#1e293b",
   },
   {
     name: "Girls",
     value: 520,
-    fill: "#10b981", // emerald
+    fill: "#10b981",
   },
 ];
 

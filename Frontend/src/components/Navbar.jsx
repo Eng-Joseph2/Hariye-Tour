@@ -7,15 +7,28 @@ function Navbar() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
+  // 1. Safe JSON parsing si looga hortago crash
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem("user");
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem("user");
+      // Hubi in xogtu tahay JSON sax ah oo aanay ahayn "undefined"
+      return saved && saved !== "undefined" ? JSON.parse(saved) : null;
+    } catch (e) {
+      console.error("Navbar storage error:", e);
+      return null;
+    }
   });
 
   useEffect(() => {
     const updateNavbar = () => {
-      const saved = localStorage.getItem("user");
-      setUser(saved ? JSON.parse(saved) : null);
+      try {
+        const saved = localStorage.getItem("user");
+        const parsedUser =
+          saved && saved !== "undefined" ? JSON.parse(saved) : null;
+        setUser(parsedUser);
+      } catch (e) {
+        setUser(null);
+      }
     };
 
     window.addEventListener("userLogin", updateNavbar);
@@ -35,10 +48,9 @@ function Navbar() {
         { withCredentials: true },
       );
 
-      // Tirtir xogta qofka iyo booking-yada hadda ku jira LocalStorage
       localStorage.removeItem("user");
       localStorage.removeItem("token");
-      localStorage.removeItem("allBookings"); // Tani waxay hubinaysaa in qofka cusub uu eber ugu yimaado
+      localStorage.removeItem("allBookings");
 
       setUser(null);
       setOpen(false);
@@ -52,21 +64,27 @@ function Navbar() {
     }
   };
 
-  // Helper for active link styling
   const navLinkStyles = ({ isActive }) =>
-    `font-bold transition-colors ${isActive ? "bg-gradient-to-r from-[#22c55e] to-[#059669] bg-clip-text text-transparent" : "text-slate-600 hover:text-emerald-500"
+    `font-bold transition-colors ${
+      isActive
+        ? "bg-gradient-to-r from-[#22c55e] to-[#059669] bg-clip-text text-transparent"
+        : "text-slate-600 hover:text-emerald-500"
     }`;
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white shadow-sm z-[100] border-b border-slate-100">
       <nav className="mx-auto w-[90%] py-4 flex justify-between items-center lg:w-[80%]">
-
         {/* Logo */}
         <Link to="/" className="flex items-center group font-display">
-          {/* SVG with Gradient Logic */}
           <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none">
             <defs>
-              <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient
+                id="logo-gradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
                 <stop offset="0%" stopColor="#22c55e" />
                 <stop offset="100%" stopColor="#059669" />
               </linearGradient>
@@ -86,7 +104,9 @@ function Navbar() {
               d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
             />
           </svg>
-          <span className="text-xl font-bold tracking-tight">Hariye Tour Agency</span>
+          <span className="text-xl font-bold tracking-tight">
+            Hariye Tour Agency
+          </span>
         </Link>
 
         {/* Desktop Links */}
@@ -110,7 +130,8 @@ function Navbar() {
               <div className="flex items-center gap-3">
                 <div className="flex flex-col items-end">
                   <span className="text-sm font-bold text-slate-900 leading-none">
-                    {user.fullName || user.name}
+                    {/* Optional Chaining (?.) si looga hortago null error */}
+                    {user?.fullName || user?.name || "User"}
                   </span>
                   <button
                     onClick={handleLogout}
@@ -121,7 +142,9 @@ function Navbar() {
                 </div>
                 {/* Avatar Icon */}
                 <div className="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-700 font-bold shadow-sm">
-                  {(user.fullName || user.name || "U").charAt(0).toUpperCase()}
+                  {(user?.fullName || user?.name || "U")
+                    .charAt(0)
+                    .toUpperCase()}
                 </div>
               </div>
             ) : (
@@ -146,19 +169,39 @@ function Navbar() {
         {/* Mobile Menu */}
         {open && (
           <div className="fixed top-[72px] left-0 w-full bg-white shadow-2xl flex flex-col items-center gap-6 py-10 md:hidden z-50 border-t border-slate-50">
-            <NavLink to="/" onClick={() => setOpen(false)} className={navLinkStyles}>Home</NavLink>
-            <NavLink to="/tours" onClick={() => setOpen(false)} className={navLinkStyles}>Tours</NavLink>
-            <NavLink to="/bookings" onClick={() => setOpen(false)} className={navLinkStyles}>My Bookings</NavLink>
-            
+            <NavLink
+              to="/"
+              onClick={() => setOpen(false)}
+              className={navLinkStyles}
+            >
+              Home
+            </NavLink>
+            <NavLink
+              to="/tours"
+              onClick={() => setOpen(false)}
+              className={navLinkStyles}
+            >
+              Tours
+            </NavLink>
+            <NavLink
+              to="/bookings"
+              onClick={() => setOpen(false)}
+              className={navLinkStyles}
+            >
+              My Bookings
+            </NavLink>
+
             <div className="w-[85%] pt-6 border-t flex flex-col items-center gap-4">
               {user ? (
                 <>
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-12 h-12 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xl font-bold">
-                       {(user.fullName || user.name || "U").charAt(0).toUpperCase()}
+                      {(user?.fullName || user?.name || "U")
+                        .charAt(0)
+                        .toUpperCase()}
                     </div>
                     <span className="font-bold text-slate-800">
-                      {user.fullName || user.name}
+                      {user?.fullName || user?.name}
                     </span>
                   </div>
                   <button
@@ -169,7 +212,11 @@ function Navbar() {
                   </button>
                 </>
               ) : (
-                <Link to="/login" onClick={() => setOpen(false)} className="block w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold text-center">
+                <Link
+                  to="/login"
+                  onClick={() => setOpen(false)}
+                  className="block w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold text-center"
+                >
                   Login
                 </Link>
               )}

@@ -1,12 +1,7 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const AdminSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: [true, "Fadlan qor magaca isticmaalaha (username)"],
-    unique: true,
-    trim: true,
-  },
   email: {
     type: String,
     required: [true, "Fadlan qor emaylkaaga"],
@@ -22,11 +17,7 @@ const AdminSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ["Admin", "SuperAdmin"],
-    default: "Admin",
-  },
-  profileImage: {
-    type: String,
-    default: "default-admin.png",
+    default: "SuperAdmin",
   },
   createdAt: {
     type: Date,
@@ -34,5 +25,26 @@ const AdminSchema = new mongoose.Schema({
   },
 });
 
+AdminSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
 const AdminModel = mongoose.model("Admin", AdminSchema);
+mongoose.connection.once("open", async () => {
+  try {
+    const adminCollection = mongoose.connection.db.collection("admins");
+    const indexes = await adminCollection.indexes();
+
+    // Haddii uu jiro username_1, tirtir
+    if (indexes.some((idx) => idx.name === "username_1")) {
+      await adminCollection.dropIndex("username_1");
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 export default AdminModel;
