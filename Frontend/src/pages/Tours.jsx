@@ -14,7 +14,7 @@ const Tours = () => {
   // 1. Kaliya xogta asalka ah ka keen API-ga hal mar
   useEffect(() => {
     axios
-      .get("http://localhost:9005/api/readAllTour")
+      .get("https://hariye-tour-agency.onrender.com/api/readAllTour")
       .then((res) => {
         setData(res.data.data);
       })
@@ -62,11 +62,12 @@ const Tours = () => {
         {/* SIDEBAR - Filter Section */}
         <aside className="w-full md:w-1/4 bg-white/80 backdrop-blur-md p-6 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 h-fit sticky top-24 transition-all duration-300">
           <div className="flex flex-col gap-8">
-
             {/* Header (Optional but recommended) */}
             <div>
               <h3 className="text-lg font-bold text-slate-800">Filters</h3>
-              <p className="text-xs text-slate-500">Refine your search results</p>
+              <p className="text-xs text-slate-500">
+                Refine your search results
+              </p>
             </div>
 
             <div className="space-y-5">
@@ -76,7 +77,19 @@ const Tours = () => {
                   label="Country"
                   value={country}
                   onChange={(val) => setCountry(val)}
-                  options={["All Countries", "Somalia", "Kenya", "Tanzania", "Ethiopia", "Uganda", "Rwanda", "Djibouti", "South Sudan", "Eritrea", "Burundi"]}
+                  options={[
+                    "All Countries",
+                    "Somalia",
+                    "Kenya",
+                    "Tanzania",
+                    "Ethiopia",
+                    "Uganda",
+                    "Rwanda",
+                    "Djibouti",
+                    "South Sudan",
+                    "Eritrea",
+                    "Burundi",
+                  ]}
                 />
               </div>
 
@@ -86,7 +99,15 @@ const Tours = () => {
                   label="Category"
                   value={category}
                   onChange={(val) => setCategory(val)}
-                  options={["All Categories", "Nature", "Beaches", "Forests", "Farms", "Historical", "Restaurants"]}
+                  options={[
+                    "All Categories",
+                    "Nature",
+                    "Beaches",
+                    "Forests",
+                    "Farms",
+                    "Historical",
+                    "Restaurants",
+                  ]}
                 />
               </div>
 
@@ -96,7 +117,12 @@ const Tours = () => {
                   label="Price Range"
                   value={priceRange}
                   onChange={(val) => setPriceRange(val)}
-                  options={["All Prices", "$0 - $500", "$501 - $1000", "$1001 - $5000"]}
+                  options={[
+                    "All Prices",
+                    "$0 - $500",
+                    "$501 - $1000",
+                    "$1001 - $5000",
+                  ]}
                 />
               </div>
             </div>
@@ -109,9 +135,16 @@ const Tours = () => {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4 group-hover:rotate-[-45deg] transition-transform"
-                fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
               </svg>
               Reset Filters
             </button>
@@ -125,7 +158,7 @@ const Tours = () => {
               <div className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition group">
                 <div className="relative">
                   <img
-                    src={`http://localhost:9005/images/${tour.image}`}
+                    src={`https://hariye-tour-agency.onrender.com/images/${tour.image}`}
                     alt={tour.title}
                     className="w-full h-48 object-cover group-hover:scale-105 transition duration-500"
                   />

@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { FaUserCircle, FaTicketAlt, FaShieldAlt, FaSpinner } from "react-icons/fa";
+import {
+  FaUserCircle,
+  FaTicketAlt,
+  FaShieldAlt,
+  FaSpinner,
+} from "react-icons/fa";
 import { LuPlaneLanding, LuPlaneTakeoff } from "react-icons/lu";
 import axios from "axios";
 const Ticket = () => {
@@ -13,7 +18,9 @@ const Ticket = () => {
   useEffect(() => {
     const fetchTicket = async () => {
       try {
-        const res = await axios.get(`http://localhost:9005/api/readBooking/${id}`);
+        const res = await axios.get(
+          `https://hariye-tour-agency.onrender.com/api/readBooking/${id}`,
+        );
         setTicketData(res.data.data);
       } catch (error) {
         console.error("Error fetching ticket:", error);
@@ -36,16 +43,21 @@ const Ticket = () => {
   if (!ticketData) {
     return (
       <div className="text-center py-20 bg-gray-50 min-h-screen flex flex-col items-center justify-center">
-        <p className="text-red-500 mb-4 font-mono font-bold">_ERROR: Ticket Not Found or Not Authorized_</p>
-        <button onClick={() => navigate("/bookings")} className="text-emerald-600 underline font-mono text-sm">
+        <p className="text-red-500 mb-4 font-mono font-bold">
+          _ERROR: Ticket Not Found or Not Authorized_
+        </p>
+        <button
+          onClick={() => navigate("/bookings")}
+          className="text-emerald-600 underline font-mono text-sm"
+        >
           &gt; back_to_dashboard
         </button>
       </div>
     );
   }
 
-  const gate = ['A12', 'B4', 'C20', 'C25'][Math.floor(Math.random() * 4)];
-  const seat = `${10 + Math.floor(Math.random() * 20)}${['A', 'C', 'D', 'F'][Math.floor(Math.random() * 4)]}`;
+  const gate = ["A12", "B4", "C20", "C25"][Math.floor(Math.random() * 4)];
+  const seat = `${10 + Math.floor(Math.random() * 20)}${["A", "C", "D", "F"][Math.floor(Math.random() * 4)]}`;
 
   return (
     <div className="min-h-screen bg-gray-50 py-16 px-4 md:px-0 font-sans antialiased text-slate-900">
@@ -66,13 +78,21 @@ const Ticket = () => {
             <div className="flex items-center gap-3">
               <FaTicketAlt className="text-3xl text-emerald-600" />
               <div>
-                <h1 className="text-xs font-mono text-slate-400 uppercase tracking-widest">Boarding Pass</h1>
-                <p className="text-lg font-bold text-slate-800">Booking confirmed</p>
+                <h1 className="text-xs font-mono text-slate-400 uppercase tracking-widest">
+                  Boarding Pass
+                </h1>
+                <p className="text-lg font-bold text-slate-800">
+                  Booking confirmed
+                </p>
               </div>
             </div>
             <div className="text-right">
-              <span className="text-[10px] font-mono text-slate-400 block">TICKET ID</span>
-              <p className="text-sm font-semibold text-emerald-600">#{ticketData._id.slice(-6).toUpperCase()}</p>
+              <span className="text-[10px] font-mono text-slate-400 block">
+                TICKET ID
+              </span>
+              <p className="text-sm font-semibold text-emerald-600">
+                #{ticketData._id.slice(-6).toUpperCase()}
+              </p>
             </div>
           </div>
 
@@ -80,8 +100,12 @@ const Ticket = () => {
           <div className="bg-slate-50 p-6 flex items-center justify-between border-b border-gray-100">
             <div className="text-center flex-1">
               <LuPlaneTakeoff className="text-3xl text-emerald-600 mx-auto mb-1" />
-              <p className="text-[11px] font-mono text-slate-400 tracking-wider">ORIGIN</p>
-              <p className="text-lg font-bold text-slate-800">Mogadishu (MGQ)</p>
+              <p className="text-[11px] font-mono text-slate-400 tracking-wider">
+                ORIGIN
+              </p>
+              <p className="text-lg font-bold text-slate-800">
+                Mogadishu (MGQ)
+              </p>
             </div>
 
             <div className="relative w-1/3 flex items-center justify-center">
@@ -91,9 +115,12 @@ const Ticket = () => {
 
             <div className="text-center flex-1">
               <LuPlaneLanding className="text-3xl text-teal-500 mx-auto mb-1" />
-              <p className="text-[11px] font-mono text-slate-400 tracking-wider">DESTINATION</p>
+              <p className="text-[11px] font-mono text-slate-400 tracking-wider">
+                DESTINATION
+              </p>
               <p className="text-lg font-bold text-slate-800">
-                {ticketData.tourId?.city || 'Kismayo'} ({ticketData.tourId?.city?.slice(0, 3).toUpperCase() || 'KIS'})
+                {ticketData.tourId?.city || "Kismayo"} (
+                {ticketData.tourId?.city?.slice(0, 3).toUpperCase() || "KIS"})
               </p>
             </div>
           </div>
@@ -101,8 +128,12 @@ const Ticket = () => {
           {/* MAIN CONTENT AREA */}
           <div className="p-8 space-y-8">
             <div>
-              <p className="text-xs font-mono text-slate-400 uppercase tracking-widest mb-1">Tour Experience</p>
-              <p className="text-2xl font-extrabold text-slate-900">{ticketData.tourId?.title}</p>
+              <p className="text-xs font-mono text-slate-400 uppercase tracking-widest mb-1">
+                Tour Experience
+              </p>
+              <p className="text-2xl font-extrabold text-slate-900">
+                {ticketData.tourId?.title}
+              </p>
               <span className="inline-block mt-2 text-[10px] font-mono bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full uppercase tracking-widest border border-emerald-100">
                 Tier 1 Verified
               </span>
@@ -113,20 +144,38 @@ const Ticket = () => {
               <div className="flex items-center gap-4">
                 <FaUserCircle className="text-4xl text-slate-200" />
                 <div>
-                  <p className="text-[11px] font-mono text-slate-400">Traveler</p>
-                  <p className="font-semibold text-slate-800">{ticketData.fullname || ticketData.name || ticketData.full_name}</p>
-                  <p className="text-xs text-slate-500">{ticketData.gender || 'Guest'}</p>
+                  <p className="text-[11px] font-mono text-slate-400">
+                    Traveler
+                  </p>
+                  <p className="font-semibold text-slate-800">
+                    {ticketData.fullname ||
+                      ticketData.name ||
+                      ticketData.full_name}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    {ticketData.gender || "Guest"}
+                  </p>
                 </div>
               </div>
               <div>
-                <p className="text-[11px] font-mono text-slate-400">Scheduled Date</p>
+                <p className="text-[11px] font-mono text-slate-400">
+                  Scheduled Date
+                </p>
                 <p className="font-semibold text-slate-800">
-                  {new Date(ticketData.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  {new Date(ticketData.createdAt).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </p>
               </div>
               <div className="text-right col-span-2 md:col-span-1">
-                <p className="text-[11px] font-mono text-slate-400">Total Price</p>
-                <p className="text-2xl font-black text-slate-900">${ticketData.tourId?.price}</p>
+                <p className="text-[11px] font-mono text-slate-400">
+                  Total Price
+                </p>
+                <p className="text-2xl font-black text-slate-900">
+                  ${ticketData.tourId?.price}
+                </p>
               </div>
             </div>
 
@@ -151,7 +200,9 @@ const Ticket = () => {
           <div className="p-8 pt-0 flex flex-col items-center">
             <div className="relative w-full text-center py-4">
               <div className="border-t border-dashed border-gray-200 w-full absolute top-1/2 left-0 -translate-y-1/2"></div>
-              <span className="relative z-10 bg-white px-4 text-[10px] font-mono text-slate-400 uppercase tracking-widest">Access Protocol</span>
+              <span className="relative z-10 bg-white px-4 text-[10px] font-mono text-slate-400 uppercase tracking-widest">
+                Access Protocol
+              </span>
             </div>
 
             <div className="flex flex-col md:flex-row items-center gap-8 mt-6">
@@ -166,9 +217,12 @@ const Ticket = () => {
 
               <div className="text-center md:text-left space-y-2">
                 <p className="text-sm text-slate-600 max-w-sm">
-                  Present this digital pass at the tour meeting point in {ticketData.tourId?.city}. Valid only on the scheduled date.
+                  Present this digital pass at the tour meeting point in{" "}
+                  {ticketData.tourId?.city}. Valid only on the scheduled date.
                 </p>
-                <p className="text-xs font-mono text-emerald-600 font-bold">Scan for entry and verification.</p>
+                <p className="text-xs font-mono text-emerald-600 font-bold">
+                  Scan for entry and verification.
+                </p>
               </div>
             </div>
           </div>
@@ -188,8 +242,9 @@ const Ticket = () => {
         </div>
       </div>
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
           @media print {
             .no-print { display: none !important; }
             body { background: white !important; color: black !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -197,8 +252,9 @@ const Ticket = () => {
             .border { border-color: #eee !important; }
             .shadow-xl, .shadow-lg, .shadow-sm { box-shadow: none !important; }
           }
-        `
-      }} />
+        `,
+        }}
+      />
     </div>
   );
 };

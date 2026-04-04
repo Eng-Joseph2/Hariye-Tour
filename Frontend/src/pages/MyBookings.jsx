@@ -33,7 +33,9 @@ const MyBookings = () => {
     }
 
     try {
-      const res = await axios.get("http://localhost:9005/api/readBooking");
+      const res = await axios.get(
+        "https://hariye-tour-agency.onrender.com/api/readBooking",
+      );
 
       const myData = res.data.data.filter((b) => b.email === userEmail);
 
@@ -54,7 +56,9 @@ const MyBookings = () => {
   const removeBooking = async (id) => {
     if (window.confirm("Are you sure you want to cancel this booking?")) {
       try {
-        await axios.delete(`http://localhost:9005/api/deleteBooking/${id}`);
+        await axios.delete(
+          `https://hariye-tour-agency.onrender.com/api/deleteBooking/${id}`,
+        );
 
         setBookings(bookings.filter((item) => item._id !== id));
       } catch (error) {
@@ -93,7 +97,7 @@ const MyBookings = () => {
               >
                 <div className="w-full md:w-[280px] h-[200px] overflow-hidden">
                   <img
-                    src={`http://localhost:9005/images/${item.tourId?.image}`}
+                    src={`https://hariye-tour-agency.onrender.com/images/${item.tourId?.image}`}
                     className="w-full h-full object-cover"
                     alt={item.tourId?.title}
                   />
@@ -127,10 +131,11 @@ const MyBookings = () => {
 
                     <div className="flex flex-col items-end gap-6">
                       <span
-                        className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider ${item.status === "allowed"
+                        className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider ${
+                          item.status === "allowed"
                             ? "bg-emerald-50 text-emerald-600"
                             : "bg-amber-50 text-amber-600"
-                          }`}
+                        }`}
                       >
                         {item.status === "allowed"
                           ? "Confirmed"
@@ -147,9 +152,7 @@ const MyBookings = () => {
                     <div className="flex gap-3">
                       {item.status === "allowed" ? (
                         <button
-                          onClick={() =>
-                            navigate(`/ticket/${item._id}`)
-                          }
+                          onClick={() => navigate(`/ticket/${item._id}`)}
                           className="flex items-center gap-2 bg-gradient-to-r from-[#22c55e] to-[#059669] text-white px-5 py-2.5 rounded-lg text-sm font-bold transition shadow-sm hover:brightness-110"
                         >
                           <FaTicketAlt /> View Ticket

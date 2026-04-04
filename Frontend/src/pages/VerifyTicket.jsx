@@ -12,7 +12,9 @@ const VerifyTicket = () => {
   useEffect(() => {
     const fetchBooking = async () => {
       try {
-        const res = await axios.get(`http://localhost:9005/api/readBooking/${id}`);
+        const res = await axios.get(
+          `https://hariye-tour-agency.onrender.com/api/readBooking/${id}`,
+        );
         setBooking(res.data.data);
       } catch (err) {
         setMessage("Invalid Ticket ID");
@@ -25,7 +27,9 @@ const VerifyTicket = () => {
 
   const handleConfirmUse = async () => {
     try {
-      const res = await axios.put(`http://localhost:9005/api/verify-ticket/${id}`);
+      const res = await axios.put(
+        `https://hariye-tour-agency.onrender.com/api/verify-ticket/${id}`,
+      );
       setMessage(res.data.message);
       setBooking({ ...booking, status: "used" });
     } catch (err) {
@@ -33,25 +37,38 @@ const VerifyTicket = () => {
     }
   };
 
-  if (loading) return <div className="p-10 text-center">Loading Security Protocol...</div>;
+  if (loading)
+    return <div className="p-10 text-center">Loading Security Protocol...</div>;
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
       <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full border border-gray-100">
-        <h1 className="text-xl font-bold mb-6 text-center text-slate-800">Admin Verification</h1>
+        <h1 className="text-xl font-bold mb-6 text-center text-slate-800">
+          Admin Verification
+        </h1>
 
         {booking && (
           <div className="space-y-4">
             <div className="bg-slate-50 p-4 rounded-xl">
-              <p className="text-xs text-slate-400 uppercase font-mono">Traveler Name</p>
-              <p className="text-lg font-bold text-slate-900">{booking.full_name}</p>
+              <p className="text-xs text-slate-400 uppercase font-mono">
+                Traveler Name
+              </p>
+              <p className="text-lg font-bold text-slate-900">
+                {booking.full_name}
+              </p>
             </div>
 
-            <div className={`p-4 rounded-xl border text-center ${
-              booking.status === 'used' ? 'bg-red-50 border-red-200' : 'bg-emerald-50 border-emerald-200'
-            }`}>
+            <div
+              className={`p-4 rounded-xl border text-center ${
+                booking.status === "used"
+                  ? "bg-red-50 border-red-200"
+                  : "bg-emerald-50 border-emerald-200"
+              }`}
+            >
               <p className="text-xs text-slate-500 uppercase">Current Status</p>
-              <p className={`text-xl font-black ${booking.status === 'used' ? 'text-red-600' : 'text-emerald-600'}`}>
+              <p
+                className={`text-xl font-black ${booking.status === "used" ? "text-red-600" : "text-emerald-600"}`}
+              >
                 {booking.status.toUpperCase()}
               </p>
             </div>

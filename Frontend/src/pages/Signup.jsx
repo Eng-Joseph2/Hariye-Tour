@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { HiOutlineMail, HiOutlineLockClosed, HiOutlineUser } from "react-icons/hi";
+import {
+  HiOutlineMail,
+  HiOutlineLockClosed,
+  HiOutlineUser,
+} from "react-icons/hi";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -26,12 +30,15 @@ const Signup = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post("http://localhost:9005/api/register", {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        confirm: formData.confirm,
-      });
+      const response = await axios.post(
+        "https://hariye-tour-agency.onrender.com/api/register",
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          confirm: formData.confirm,
+        },
+      );
 
       if (response.data.success) {
         alert("Registration Successful!");
@@ -59,23 +66,44 @@ const Signup = () => {
           <div className="inline-flex items-center justify-center p-2 mb-4 bg-white rounded-lg shadow-sm border border-slate-100">
             <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none">
               <defs>
-                <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient
+                  id="logo-grad"
+                  x1="0%"
+                  y1="0%"
+                  x2="100%"
+                  y2="100%"
+                >
                   <stop offset="0%" stopColor="#10b981" />
                   <stop offset="100%" stopColor="#059669" />
                 </linearGradient>
               </defs>
-              <path stroke="url(#logo-grad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path stroke="url(#logo-grad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path
+                stroke="url(#logo-grad)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              />
+              <path
+                stroke="url(#logo-grad)"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+              />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Create Account</h2>
-          <p className="text-slate-400 text-sm mt-1 font-medium">Join Hariye Tour Agency today</p>
+          <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
+            Create Account
+          </h2>
+          <p className="text-slate-400 text-sm mt-1 font-medium">
+            Join Hariye Tour Agency today
+          </p>
         </div>
 
         {/* The Card */}
         <div className="bg-white p-6 md:p-8 rounded-xl shadow-xl shadow-slate-200/50 border border-slate-100">
           <form className="space-y-4" onSubmit={handleSubmit}>
-            
             {/* Full Name */}
             <div className="relative">
               <HiOutlineUser className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" />
@@ -140,7 +168,15 @@ const Signup = () => {
                 className="w-4 h-4 accent-emerald-600 rounded-sm cursor-pointer border-slate-300"
               />
               <span className="text-[11px] text-slate-500 leading-tight">
-                I agree to the <span className="text-emerald-600 font-bold hover:underline cursor-pointer">Terms of Service</span> and <span className="text-emerald-600 font-bold hover:underline cursor-pointer">Privacy Policy</span>.
+                I agree to the{" "}
+                <span className="text-emerald-600 font-bold hover:underline cursor-pointer">
+                  Terms of Service
+                </span>{" "}
+                and{" "}
+                <span className="text-emerald-600 font-bold hover:underline cursor-pointer">
+                  Privacy Policy
+                </span>
+                .
               </span>
             </div>
 

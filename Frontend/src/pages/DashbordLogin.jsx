@@ -17,10 +17,13 @@ function DashbordLogin() {
 
     try {
       // Xogta waxay si toos ah ugu socotaa Backend-ka si looga soo xaqiijiyo Database-ka
-      const res = await axios.post("http://localhost:9005/api/admin-login", {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        "https://hariye-tour-agency.onrender.com/api/admin-login",
+        {
+          email,
+          password,
+        },
+      );
 
       if (res.data.success) {
         // Kaydi xogta admin-ka iyo token-ka JWT ee server-ka ka yimid

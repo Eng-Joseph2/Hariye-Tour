@@ -11,7 +11,9 @@ function CustomerTable() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const res = await axios.get("http://localhost:9005/api/readAuth");
+        const res = await axios.get(
+          "https://hariye-tour-agency.onrender.com/api/readAuth",
+        );
         setCustomers(res.data.data || res.data);
       } catch (error) {
         console.log("Error:", error);
@@ -28,7 +30,7 @@ function CustomerTable() {
   const deleteCustomer = (id) => {
     if (window.confirm("Ma hubtaa inaad tirtirto macmiilkan?")) {
       axios
-        .delete(`http://localhost:9005/api/deleteUser/${id}`)
+        .delete(`https://hariye-tour-agency.onrender.com/api/deleteUser/${id}`)
         .then(() => {})
         .catch((err) => {
           console.error("Delete error:", err);

@@ -12,7 +12,7 @@ function TourTable() {
 
   const fetchTours = () => {
     axios
-      .get("http://localhost:9005/api/readAllTour")
+      .get("https://hariye-tour-agency.onrender.com/api/readAllTour")
       .then((res) => setTours(res.data.data))
       .catch((error) => console.log("Error fetching tours:", error));
   };
@@ -25,7 +25,7 @@ function TourTable() {
   const deleteTour = (id) => {
     if (window.confirm("Are you sure you want to delete this tour?")) {
       axios
-        .delete(`http://localhost:9005/api/deleteTour/${id}`)
+        .delete(`https://hariye-tour-agency.onrender.com/api/deleteTour/${id}`)
         .then(() => {
           fetchTours();
         })
@@ -117,7 +117,7 @@ function TourTable() {
                     <td className="p-4">
                       <div className="w-12 h-10 bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
                         <img
-                          src={`http://localhost:9005/images/${tour.image}`}
+                          src={`https://hariye-tour-agency.onrender.com/images/${tour.image}`}
                           alt={tour.city}
                           className="w-full h-full object-cover"
                         />

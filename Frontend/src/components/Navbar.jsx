@@ -43,7 +43,7 @@ function Navbar() {
   const handleLogout = async () => {
     try {
       await axios.post(
-        "http://localhost:9005/api/logout",
+        "https://hariye-tour-agency.onrender.com/api/logout",
         {},
         { withCredentials: true },
       );

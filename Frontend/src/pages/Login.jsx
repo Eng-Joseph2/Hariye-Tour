@@ -19,7 +19,7 @@ const Login = () => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:9005/api/login",
+        "https://hariye-tour-agency.onrender.com/api/login",
         formData,
       );
       if (response.data.success) {
@@ -96,7 +96,8 @@ const Login = () => {
           <div className="grid w-full gap-3 mb-6">
             <button
               onClick={() =>
-                (window.location.href = "http://localhost:9005/api/auth/google")
+                (window.location.href =
+                  "https://hariye-tour-agency.onrender.com/api/auth/google")
               }
               className="flex items-center justify-center gap-2 w-full py-2 border border-slate-200 rounded-md hover:bg-slate-50 transition-all text-sm font-semibold text-slate-600 shadow-sm"
             >

@@ -20,7 +20,9 @@ function BookingTable() {
   // 1. Function-ka xogta keenaya (wuxuu sameynayaa reverse)
   const fetchBookings = useCallback(async () => {
     try {
-      const res = await axios.get("http://localhost:9005/api/readBooking");
+      const res = await axios.get(
+        "https://hariye-tour-agency.onrender.com/api/readBooking",
+      );
       const reversedData = (res.data.data || []).reverse();
       setBookings(reversedData);
     } catch (error) {
@@ -52,7 +54,7 @@ function BookingTable() {
       setActionLoading(id);
       try {
         const response = await axios.put(
-          `http://localhost:9005/api/updateBookingStatus/${id}`,
+          `https://hariye-tour-agency.onrender.com/api/updateBookingStatus/${id}`,
           { status: newStatus },
         );
         if (response.data.success) {
