@@ -16,10 +16,10 @@ import MyBookings from "./pages/MyBookings";
 import AddBooking from "./pages/AddBooking";
 import DashbordLogin from "./pages/DashbordLogin";
 import BookingTable from "./Dashbord/Booking/BookingTable";
-import Setting from "./Dashbord/Setting";
 import CustomerTable from "./pages/CustomerTable";
 import Ticket from "./pages/Ticket";
 import VerifyTicket from "./pages/VerifyTicket";
+import Setting from "./Dashbord/setting";
 
 const App = () => {
   // 1. Hubi user-ka si ammaan ah (Safe JSON parsing)
