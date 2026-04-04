@@ -60,7 +60,6 @@ const App = () => {
         {/* --- AUTH & ADMIN (NO NAVBAR) --- */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/auth-success" element={<AuthSuccess />} />
         <Route path="/admin/login" element={<DashbordLogin />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/admin-dash" element={<DivideDash />} />
@@ -69,6 +68,7 @@ const App = () => {
         <Route path="/admin/dash/BookingTable" element={<BookingTable />} />
         <Route path="/admin/settings" element={<Setting />} />
         <Route path="/admin/customers" element={<CustomerTable />} />
+        <Route path="/auth-success" element={<AuthSuccess />} />
       </Routes>
     </BrowserRouter>
   );

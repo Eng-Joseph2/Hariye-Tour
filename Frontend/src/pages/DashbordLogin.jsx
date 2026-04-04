@@ -18,29 +18,36 @@ function DashbordLogin() {
     e.preventDefault();
     setError("");
 
+    // 1. Hubi inuu qofku ku jiro liiska Admin-ka (In-memory check)
     const isAdmin = allowedAdmins.find(
       (admin) => admin.email === email && admin.password === password,
-      navigate("/admin-dash"),
-      alert("sucess "),
     );
 
+    // 2. Haddii aan la helin, halkan ku jooji
     if (!isAdmin) {
       setError("Email ama Password-ka waa khaldan yihiin.");
       return;
     }
 
+    // 3. Haddii la helay, u gudbi Backend-ka si loo helo Token-ka saxda ah
     try {
       const res = await axios.post("http://localhost:9005/api/login", {
         email,
         password,
       });
+
       if (res.data.success) {
         localStorage.setItem("user", JSON.stringify(res.data.user));
+        localStorage.setItem("token", res.data.token); // Keydi token-ka
         window.dispatchEvent(new Event("userLogin"));
-        navigate("/dashboard");
+
+        alert("Sucess Admin !");
+        navigate("/admin-dash"); // U gudbi halka loo baahnaa
+      } else {
+        setError("we don't see anything");
       }
     } catch (err) {
-      setError("Cillad ayaa ka jirta server-ka.");
+      setError("server error.");
       console.log(err);
     }
   };
@@ -140,7 +147,7 @@ function DashbordLogin() {
             type="submit"
             className="w-full bg-[#059669] hover:bg-[#047857] text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-100 transition-all active:scale-[0.98] mt-4"
           >
-            Gali Dashboard-ka
+            GO to Dashboard
           </button>
         </form>
       </div>

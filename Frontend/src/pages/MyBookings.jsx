@@ -35,11 +35,9 @@ const MyBookings = () => {
     try {
       const res = await axios.get("http://localhost:9005/api/readBooking");
 
-      // 3. Filter the global list of bookings to only show this user's email
-
       const myData = res.data.data.filter((b) => b.email === userEmail);
 
-      console.log("My Filtered Bookings:", myData); // Debugging line
+      console.log("My Filtered Bookings:", myData);
 
       setBookings(myData);
     } catch (error) {
@@ -52,8 +50,6 @@ const MyBookings = () => {
   useEffect(() => {
     fetchMyBookings();
   }, [fetchMyBookings]);
-
-  // 2. Handle Deletion via API
 
   const removeBooking = async (id) => {
     if (window.confirm("Are you sure you want to cancel this booking?")) {
@@ -77,8 +73,6 @@ const MyBookings = () => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans mt-18">
-      {/* Header Section */}
-
       <div className="bg-gradient-to-r from-green-700 to-blue-600 h-[25vh] flex flex-col justify-center text-white">
         <div className="w-[80%] mx-auto">
           <h1 className="text-4xl font-bold mb-4">My Bookings</h1>
@@ -97,8 +91,6 @@ const MyBookings = () => {
                 key={item._id}
                 className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:flex-row items-center"
               >
-                {/* Image */}
-
                 <div className="w-full md:w-[280px] h-[200px] overflow-hidden">
                   <img
                     src={`http://localhost:9005/images/${item.tourId?.image}`}
