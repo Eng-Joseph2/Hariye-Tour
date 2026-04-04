@@ -101,3 +101,21 @@ export const AuthLogout = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params; // Assumes you're passing /delete/:id in your routes
+
+    const deletedUser = await AuthModel.findByIdAndDelete(id);
+
+    if (!deletedUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    return res.json({ success: true, message: "User deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
