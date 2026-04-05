@@ -24,11 +24,10 @@ import Setting from "./Dashbord/setting";
 
 // --- 1. PROTECTED ROUTE COMPONENT ---
 const AdminProtectedRoute = ({ user }) => {
-  // If no user or the role is not Admin/SuperAdmin, send to login
-  if (!user || (user.role !== "Admin" && user.role !== "SuperAdmin")) {
+  // Only allow SuperAdmin
+  if (!user || user.role !== "SuperAdmin") {
     return <Navigate to="/login" replace />;
   }
-  // If admin, allow them to see the page (Outlet)
   return <Outlet />;
 };
 

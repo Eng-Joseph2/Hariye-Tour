@@ -44,41 +44,56 @@ export const AuthRegister = async (req, res) => {
   }
 };
 
+// authcontroller.js
+
 export const AuthLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const normalizedEmail = normalizeEmail(email);
 
     if (!normalizedEmail || !password) {
-      return res.json({ success: false, message: "Email and password are required" });
+      return res.status(400).json({ success: false, message: "Email and password are required" });
     }
 
-    // Check admin accounts first so admins can login through the same endpoint.
-    const adminEmailPattern = new RegExp(`^${escapeRegExp(normalizedEmail)}$`, "i");
-    let account = await AdminModel.findOne({ email: { $regex: adminEmailPattern } });
-    let role = "user";
+    // 1. Try to find the account in AdminModel first
+    let account = await AdminModel.findOne({ email: normalizedEmail });
+    let role = null;
 
     if (account) {
-      role = account.role || "Admin";
-      if (!account.password) {
-        return res.json({ success: false, message: "This account does not have a password. Please sign in with the appropriate provider." });
-      }
+      role = "SuperAdmin"; // Force everything to SuperAdmin as requested
     } else {
+      // 2. If not an admin, check AuthModel (Regular Users)
       account = await AuthModel.findOne({ email: normalizedEmail });
-      if (!account) {
-        return res.json({ success: false, message: "Invalid email or password" });
-      }
-      if (!account.password) {
-        return res.json({ success: false, message: "This account was created with Google login. Please sign in with Google." });
-      }
+      role = "user";
     }
 
+    // 3. If no account found in either table
+    if (!account) {
+      return res.status(401).json({ success: false, message: "Invalid email or password" });
+    }
+
+    // 4. Handle accounts without passwords (e.g., Google OAuth users)
+    if (!account.password) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Please sign in with your social provider (Google/Github)." 
+      });
+    }
+
+    // 5. Verify Password
     const isMatch = await bcrypt.compare(password, account.password);
     if (!isMatch) {
-      return res.json({ success: false, message: "Invalid email or password" });
+      return res.status(401).json({ success: false, message: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ id: account._id, role }, process.env.JWT_SECRET, { expiresIn: "2d" });
+    // 6. Generate Unified Token
+    const token = jwt.sign(
+      { id: account._id, role }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: "2d" }
+    );
+
+    // 7. Set Cookie
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -86,7 +101,15 @@ export const AuthLogin = async (req, res) => {
       maxAge: 2 * 24 * 60 * 60 * 1000,
     });
 
-    return res.json({ success: true, message: "Login successful", role, user: { id: account._id, name: account.name, email: account.email, role } });
+    // 8. Return data for frontend redirection
+    return res.json({ 
+      success: true, 
+      message: "Login successful", 
+      role, 
+      token, // Send token in body too for localStorage fallback
+      user: { id: account._id, name: account.name || "Admin", email: account.email, role } 
+    });
+    
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

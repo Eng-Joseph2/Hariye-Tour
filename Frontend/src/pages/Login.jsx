@@ -13,11 +13,11 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Login.jsx
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      // 1. Hit the UNIFIED login endpoint
       const response = await axios.post(
         "https://hariye-tour-agency.onrender.com/api/login",
         formData
@@ -26,33 +26,23 @@ const Login = () => {
       if (response.data.success) {
         const { token, user, role } = response.data;
 
-        // 2. Save the data including the role
-        // It's important that 'user' object here includes the role 
-        // so App.jsx can see it.
-        const userData = { ...user, role: role || user.role || "user" };
-        
+        // Save data
         localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("user", JSON.stringify(user));
 
-        // 3. Trigger the update event for App.jsx
+        // Update App state
         window.dispatchEvent(new Event("userLogin"));
 
-        // 4. SMART REDIRECTION
-        // If the role is Admin or SuperAdmin, go to dashboard
-        if (role === "Admin" || role === "SuperAdmin") {
-          alert("Login Successful! Welcome to the Admin Panel.");
-          navigate("/admin-dash"); 
+        // REDIRECTION LOGIC
+        if (role === "SuperAdmin") {
+          alert("Welcome, Admin!");
+          navigate("/admin-dash");
         } else {
-          // Otherwise, go to the homepage
           navigate("/");
         }
-      } else {
-        alert(response.data.message || "Email or password is incorrect!");
       }
     } catch (error) {
-      // Handle errors from the server (e.g., 401 Unauthorized)
-      const errorMsg = error.response?.data?.message || "The information entered is incorrect!";
-      alert(errorMsg);
+      alert(error.response?.data?.message || "Login failed");
     } finally {
       setIsLoading(false);
     }
@@ -154,7 +144,7 @@ const Login = () => {
           </form>
 
           <p className="text-center mt-6 text-sm text-slate-500 font-medium">
-            New here? 
+            New here?
             <Link to="/signup" className="text-emerald-600 font-bold hover:underline ml-1.5 transition-colors">
               Create Account
             </Link>
