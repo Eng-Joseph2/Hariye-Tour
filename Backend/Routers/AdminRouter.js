@@ -1,15 +1,15 @@
 import express from "express";
-import { register, login, logout } from "../Controller/AdminController.js"; // Hubi magaca faylka
+import { AdminRegister, AdminLogin, AdminLogout } from "../Controller/AuthController.js";
 
 const router = express.Router();
 
 // Register Admin cusub
-router.post("/admin-register", register);
+router.post("/admin-register", AdminRegister);
 
 // Login Admin
-router.post("/admin-login", login);
+router.post("/admin-login", AdminLogin);
 
 // Logout Admin
-router.post("/admin-logout", logout);
+router.post("/admin-logout", AdminLogout);
 
 export default router;
