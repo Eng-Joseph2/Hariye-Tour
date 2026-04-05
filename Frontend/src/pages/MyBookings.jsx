@@ -123,7 +123,7 @@ const MyBookings = () => {
                           <FaCalendarAlt size={12} />
 
                           <span>
-                            {new Date(item.createdAt).toLocaleDateString()}
+                            {new Date(item.startDay).toLocaleDateString()}
                           </span>
                         </div>
                       </div>
