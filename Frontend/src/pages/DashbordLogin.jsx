@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { FaLock, FaExclamationCircle, FaArrowLeft } from "react-icons/fa";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:9005";
+
 function DashbordLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +20,7 @@ function DashbordLogin() {
     try {
       // The data is sent directly to the backend for database verification
       const res = await axios.post(
-        "https://hariye-tour-agency.onrender.com/api/admin-login",
+        `${API_BASE_URL}/api/admin-login`,
         {
           email,
           password,

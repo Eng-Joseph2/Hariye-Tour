@@ -4,7 +4,9 @@ import bcrypt from "bcryptjs";
 
 export const register = async (req, res) => {
   try {
-    const { email, password, role } = req.body;
+    let { email, password, role } = req.body;
+    email = email.toLowerCase().trim();
+
     const existingAdmin = await AdminModel.findOne({ email });
     if (existingAdmin) {
       return res.status(400).json({
@@ -23,7 +25,8 @@ export const register = async (req, res) => {
 // --- LOGIN ADMIN ---
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    email = email.toLowerCase().trim();
 
     // 1. Raadi admin-ka
     const admin = await AdminModel.findOne({ email });
@@ -51,7 +54,7 @@ export const login = async (req, res) => {
     res.status(200).json({
       success: true,
       token,
-      admin: { id: admin._id, email: admin.email, role: admin.role },
+      user: { id: admin._id, email: admin.email, role: admin.role },
       message: "Login successful.",
     });
   } catch (error) {
