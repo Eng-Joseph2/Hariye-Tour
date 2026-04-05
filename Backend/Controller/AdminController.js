@@ -26,22 +26,42 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     let { email, password } = req.body;
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email and password are required." });
+    }
+
     email = email.toLowerCase().trim();
 
     // 1. Raadi admin-ka
     const admin = await AdminModel.findOne({ email });
     if (!admin) {
       return res
-        .status(404)
-        .json({ success: false, message: "Admin not found." });
+        .status(401)
+        .json({ success: false, message: "Invalid email or password." });
     }
 
     // 2. Verify the password (compare the hashed value with the input)
-    const isMatch = await bcrypt.compare(password, admin.password);
+    let isMatch = await bcrypt.compare(password, admin.password);
+
+    // Support legacy records where the password was saved in plain text
+    const plainTextPasswordDetected =
+      admin.password && !/^\$2[aby]\$\d{2}\$.{53}$/.test(admin.password);
+
+    if (!isMatch && plainTextPasswordDetected) {
+      if (password === admin.password) {
+        // Rehash the stored plain password for security and update the record.
+        admin.password = password;
+        await admin.save();
+        isMatch = true;
+      }
+    }
+
     if (!isMatch) {
       return res
         .status(401)
-        .json({ success: false, message: "Password is incorrect." });
+        .json({ success: false, message: "Invalid email or password." });
     }
 
     // 3. Samee Token (JWT)

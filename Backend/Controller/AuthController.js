@@ -5,13 +5,15 @@ import AuthModel from "../Models/AuthModel.js";
 export const AuthRegister = async (req, res) => {
   try {
     const { name, email, password, confirm } = req.body;
-    if (!name || !email || !password || !confirm) {
+    const normalizedEmail = email?.toLowerCase().trim();
+
+    if (!name || !normalizedEmail || !password || !confirm) {
       return res.json({ success: false, message: "Missing Details" });
     }
     if (password !== confirm) {
       return res.json({ success: false, message: "Passwords do not match" });
     }
-    const existEMail = await AuthModel.findOne({ email });
+    const existEMail = await AuthModel.findOne({ email: normalizedEmail });
     if (existEMail) {
       return res.json({
         success: false,
@@ -21,7 +23,7 @@ export const AuthRegister = async (req, res) => {
     const hashPassword = await bcrypt.hash(password, 10);
     const AuthUser = new AuthModel({
       name,
-      email,
+      email: normalizedEmail,
       password: hashPassword,
     });
 
@@ -45,15 +47,23 @@ export const AuthRegister = async (req, res) => {
 export const AuthLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) {
+    const normalizedEmail = email?.toLowerCase().trim();
+
+    if (!normalizedEmail || !password) {
       return res.json({
         success: false,
         message: "Email and password are required",
       });
     }
-    const user = await AuthModel.findOne({ email });
+    const user = await AuthModel.findOne({ email: normalizedEmail });
     if (!user) {
       return res.json({ success: false, message: "Invalid email or password" });
+    }
+    if (!user.password) {
+      return res.json({
+        success: false,
+        message: "This account was created with Google login. Please sign in with Google.",
+      });
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
