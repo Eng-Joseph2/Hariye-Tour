@@ -58,7 +58,7 @@ export default function TourDetails() {
     const loggedInUser = JSON.parse(localStorage.getItem("user"));
 
     if (!loggedInUser) {
-      alert("Fadlan marka hore Login soo dheh!");
+      alert("Please log in before booking.");
       navigate("/login");
       return;
     }
@@ -76,7 +76,7 @@ export default function TourDetails() {
 
       if (isAlreadyBooked) {
         alert(
-          "Safarkan horay ayaad u ballansatay, hal mar ka badan lama ogola!",
+          "You have already booked this tour; multiple bookings are not allowed.",
         );
         navigate("/bookings");
         return;
@@ -115,11 +115,11 @@ export default function TourDetails() {
       );
       setTour(updatedTour.data.data);
 
-      alert("Guul! Ballantaada waa la xaqiijiyay.");
+      alert("Success! Your booking has been confirmed.");
       navigate("/bookings");
     } catch (err) {
       console.error("Booking Error:", err);
-      alert("Qalad ayaa dhacay xiligii ballansashada.");
+      alert("An error occurred during booking.");
     }
   };
 

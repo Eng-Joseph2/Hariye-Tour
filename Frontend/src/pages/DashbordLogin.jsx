@@ -16,7 +16,7 @@ function DashbordLogin() {
     setLoading(true);
 
     try {
-      // Xogta waxay si toos ah ugu socotaa Backend-ka si looga soo xaqiijiyo Database-ka
+      // The data is sent directly to the backend for database verification
       const res = await axios.post(
         "https://hariye-tour-agency.onrender.com/api/admin-login",
         {
@@ -26,20 +26,20 @@ function DashbordLogin() {
       );
 
       if (res.data.success) {
-        // Kaydi xogta admin-ka iyo token-ka JWT ee server-ka ka yimid
+        // Store the admin data and JWT token returned by the server
         localStorage.setItem("user", JSON.stringify(res.data.user));
         localStorage.setItem("token", res.data.token);
 
-        // Cusboonaysii qofka gudaha ku jira (Auth state)
+        // Update the authenticated user state
         window.dispatchEvent(new Event("userLogin"));
 
-        alert("Login Successful! Soo dhawoow Admin.");
+        alert("Login Successful! Welcome, Admin.");
         navigate("/admin-dash");
       }
     } catch (err) {
-      // Halkan waxaa lagu soo bandhigayaa error-ka saxda ah ee Backend-ka ka yimaada
+      // Display the precise error returned from the backend
       const errorMessage =
-        err.response?.data?.message || "Email ama Password khaldan.";
+        err.response?.data?.message || "Invalid email or password.";
       setError(errorMessage);
       console.log("Admin Login Error:", err);
     } finally {
@@ -80,9 +80,9 @@ function DashbordLogin() {
             </span>
           </div>
 
-          <h2 className="text-white text-3xl font-bold">Soo dhawoow Admin</h2>
+          <h2 className="text-white text-3xl font-bold">Welcome, Admin</h2>
           <p className="text-emerald-100/80 text-sm mt-2">
-            Maamulka East Africa Tours
+            East Africa Tours Administration
           </p>
         </div>
 
@@ -143,7 +143,7 @@ function DashbordLogin() {
             disabled={loading}
             className="w-full bg-[#059669] hover:bg-[#047857] text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-100 transition-all active:scale-[0.98] mt-4 disabled:opacity-50"
           >
-            {loading ? "Fadlan sug..." : "GO to Dashboard"}
+            {loading ? "Please wait..." : "Go to Dashboard"}
           </button>
         </form>
       </div>

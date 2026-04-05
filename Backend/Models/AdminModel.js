@@ -4,14 +4,14 @@ import bcrypt from "bcryptjs";
 const AdminSchema = new mongoose.Schema({
   email: {
     type: String,
-    required: [true, "Fadlan qor emaylkaaga"],
+    required: [true, "Please enter your email."],
     unique: true,
     lowercase: true,
     trim: true,
   },
   password: {
     type: String,
-    required: [true, "Fadlan qor password-ka"],
+    required: [true, "Please enter your password."],
     minlength: 6,
   },
   role: {
@@ -38,7 +38,7 @@ mongoose.connection.once("open", async () => {
     const adminCollection = mongoose.connection.db.collection("admins");
     const indexes = await adminCollection.indexes();
 
-    // Haddii uu jiro username_1, tirtir
+    // If an obsolete username_1 index exists, remove it
     if (indexes.some((idx) => idx.name === "username_1")) {
       await adminCollection.dropIndex("username_1");
     }

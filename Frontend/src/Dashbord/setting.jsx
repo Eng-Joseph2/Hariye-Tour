@@ -4,7 +4,7 @@ import Menu from "./Menu";
 import AdminAvatar from "./AdminAvatar";
 
 function Setting() {
-  // Ka soo qaad LocalStorage ka hor render
+  // Load admin data from LocalStorage before rendering
   const savedAdmin = JSON.parse(localStorage.getItem("adminUser"));
 
   const [admin, setAdmin] = useState({
@@ -20,7 +20,7 @@ function Setting() {
 
   const handleUpdate = (e) => {
     e.preventDefault();
-    alert("Guul: Macluumaadkaaga waa la cusboonaysiiyay!");
+    alert("Success: Your information has been updated!");
     // Halkan waxaad ku dari kartaa axios.put si aad database ugu xirto
   };
 

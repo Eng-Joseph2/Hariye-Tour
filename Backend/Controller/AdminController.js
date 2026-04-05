@@ -9,7 +9,7 @@ export const register = async (req, res) => {
     if (existingAdmin) {
       return res.status(400).json({
         success: false,
-        message: "Email-kan horay ayaa loo diwaangeliyey",
+        message: "This email has already been registered.",
       });
     }
 
@@ -30,15 +30,15 @@ export const login = async (req, res) => {
     if (!admin) {
       return res
         .status(404)
-        .json({ success: false, message: "Admin-kan lama helin" });
+        .json({ success: false, message: "Admin not found." });
     }
 
-    // 2. Hubi password-ka (Isbarbardhig kan hashed ah iyo kan lasoo qoray)
+    // 2. Verify the password (compare the hashed value with the input)
     const isMatch = await bcrypt.compare(password, admin.password);
     if (!isMatch) {
       return res
         .status(401)
-        .json({ success: false, message: "Password-ka waa khalad" });
+        .json({ success: false, message: "Password is incorrect." });
     }
 
     // 3. Samee Token (JWT)
@@ -52,7 +52,7 @@ export const login = async (req, res) => {
       success: true,
       token,
       admin: { id: admin._id, email: admin.email, role: admin.role },
-      message: "Si guul leh ayaad u gashay",
+      message: "Login successful.",
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -63,5 +63,5 @@ export const login = async (req, res) => {
 export const logout = (req, res) => {
   res
     .status(200)
-    .json({ success: true, message: "Si guul leh ayaad u baxday" });
+    .json({ success: true, message: "Logout successful." });
 };

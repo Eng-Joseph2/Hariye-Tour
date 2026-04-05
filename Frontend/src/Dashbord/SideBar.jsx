@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom"; // Soo deji kuwan
+import { Link, useLocation } from "react-router-dom"; // Import these
 import {
   LayoutDashboard,
   Map,
@@ -39,7 +39,7 @@ const sidebarLinks = [
 ];
 
 function SideBar() {
-  const location = useLocation(); // Kani wuxuu ogaanayaa bogga aad joogto
+  const location = useLocation(); // This determines the current page location
 
   return (
     <div className="flex flex-col h-[calc(100vh-120px)] justify-between px-3 pb-12">

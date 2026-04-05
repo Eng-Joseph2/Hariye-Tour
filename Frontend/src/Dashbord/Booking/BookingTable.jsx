@@ -17,7 +17,7 @@ function BookingTable() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
 
-  // 1. Function-ka xogta keenaya (wuxuu sameynayaa reverse)
+  // 1. Data fetch function (it reverses the list)
   const fetchBookings = useCallback(async () => {
     try {
       const res = await axios.get(
@@ -32,17 +32,17 @@ function BookingTable() {
     }
   }, []);
 
-  // 2. useEffect leh Automatic Refresh (Interval)
+  // 2. useEffect with automatic refresh (interval)
   useEffect(() => {
-    // Marka ugu horeysa keen xogta
+    // First, fetch the data
     fetchBookings();
 
-    // 5-tii ilbiriqsi kasta xogta soo cusboonaysii si toos ah
+    // Refresh the data every 5 seconds automatically
     const autoRefresh = setInterval(() => {
       fetchBookings();
     }, 5000);
 
-    // Nadiifi interval-ka marka laga baxo bogga
+    // Clear the interval when leaving the page
     return () => clearInterval(autoRefresh);
   }, [fetchBookings]);
 

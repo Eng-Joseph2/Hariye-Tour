@@ -47,11 +47,11 @@ const Login = () => {
           navigate("/");
         }
       } else {
-        alert(response.data.message || "Email ama Password khaldan!");
+        alert(response.data.message || "Email or password is incorrect!");
       }
     } catch (error) {
       // Handle errors from the server (e.g., 401 Unauthorized)
-      const errorMsg = error.response?.data?.message || "Xogta aad gelisay waa khaldan tahay!";
+      const errorMsg = error.response?.data?.message || "The information entered is incorrect!";
       alert(errorMsg);
     } finally {
       setIsLoading(false);

@@ -18,14 +18,14 @@ export const unifiedLogin = async (req, res) => {
       // 2. Check User Collection if not an admin
       account = await AuthModel.findOne({ email });
       if (!account) {
-        return res.status(401).json({ success: false, message: "Email ama Password khaldan!" });
+        return res.status(401).json({ success: false, message: "Email or password is incorrect!" });
       }
     }
 
     // 3. Verify Password
     const isMatch = await bcrypt.compare(password, account.password);
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Email ama Password khaldan!" });
+      return res.status(401).json({ success: false, message: "Email or password is incorrect!" });
     }
 
     // 4. Create Token with Role
@@ -46,10 +46,11 @@ export const unifiedLogin = async (req, res) => {
         name: account.name || "Admin",
         role: role
       },
-      message: "Si guul leh ayaad u gashay"
+      message: "Login successful."
     });
 
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+  

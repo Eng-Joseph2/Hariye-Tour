@@ -26,15 +26,15 @@ function CustomerTable() {
     getData();
   }, []);
 
-  // 2. Tirtirista Macmiilka
+  // 2. Delete customer
   const deleteCustomer = (id) => {
-    if (window.confirm("Ma hubtaa inaad tirtirto macmiilkan?")) {
+    if (window.confirm("Are you sure you want to delete this customer?")) {
       axios
         .delete(`https://hariye-tour-agency.onrender.com/api/deleteUser/${id}`)
         .then(() => {})
         .catch((err) => {
           console.error("Delete error:", err);
-          alert("Waan ka xunnahay, tirtirista ma suuroobin.");
+          alert("Sorry, the deletion could not be completed.");
         });
     }
   };
@@ -59,7 +59,7 @@ function CustomerTable() {
                 Customers
               </h1>
               <p className="text-slate-500 text-sm font-medium">
-                Dhamaan dadka iska diiwaangeliyey Hariye Tour.
+                All customers registered with Hariye Tour.
               </p>
             </div>
             <div className="bg-emerald-50 text-emerald-700 px-4 py-2 rounded-2xl font-bold text-sm shadow-sm">
@@ -102,7 +102,7 @@ function CustomerTable() {
                             <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 font-bold shadow-sm border border-emerald-100">
                               <FaUser size={14} />
                             </div>
-                            {/* 1. HALKAN KA EEG: 'user.name' ayaan u bedelay maadaama xogtaada JSON ay 'name' tahay */}
+                            {/* 1. NOTE: use 'user.name' because the returned JSON includes that field */}
                             <span className="text-sm text-slate-800 font-black capitalize">
                               {user.name}
                             </span>
@@ -117,7 +117,7 @@ function CustomerTable() {
                         </td>
                         <td className="p-6 text-center">
                           <button
-                            onClick={() => deleteCustomer(user._id)} // 3. ID-gu waa '_id' sidii ku jirtay xogta
+                            onClick={() => deleteCustomer(user._id)} // 3. The ID is '_id' as returned by the data
                             className="p-3 text-red-400 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all"
                           >
                             <FaTrashAlt size={16} />
@@ -131,7 +131,7 @@ function CustomerTable() {
                         colSpan="4"
                         className="p-20 text-center text-slate-400 font-bold"
                       >
-                        Hadda ma jiraan macaamiil diiwaangelisan.
+                          There are currently no registered customers.
                       </td>
                     </tr>
                   )}

@@ -11,7 +11,7 @@ const Tours = () => {
   const [category, setCategory] = useState("All Categories");
   const [priceRange, setPriceRange] = useState("All Prices");
 
-  // 1. Kaliya xogta asalka ah ka keen API-ga hal mar
+  // 1. Fetch the original data from the API only once
   useEffect(() => {
     axios
       .get("https://hariye-tour-agency.onrender.com/api/readAllTour")
@@ -21,8 +21,8 @@ const Tours = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  // 2. HALKAN WAAYE SIRTU: Sifeeynta halkan ku sameey adigoo isticmaalaya variable caadi ah
-  // Tani ma kicinayso re-render aan loo baahnayn
+  // 2. IMPORTANT: apply filtering here using a normal variable
+  // This avoids unnecessary re-renders
   const filteredData = data.filter((tour) => {
     const matchCountry =
       country === "All Countries" || tour.country === country;
