@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import AuthModel from "../Models/AuthModel.js";
+import AdminModel from "../Models/AdminModel.js";
 
 export const AuthRegister = async (req, res) => {
   try {
@@ -55,21 +56,38 @@ export const AuthLogin = async (req, res) => {
         message: "Email and password are required",
       });
     }
-    const user = await AuthModel.findOne({ email: normalizedEmail });
-    if (!user) {
-      return res.json({ success: false, message: "Invalid email or password" });
+
+    // First check admin accounts so admins can login through the unified login endpoint.
+    let account = await AdminModel.findOne({ email: normalizedEmail });
+    let role = "user";
+
+    if (account) {
+      role = account.role || "Admin";
+      if (!account.password) {
+        return res.json({
+          success: false,
+          message: "This account does not have a password. Please sign in with the appropriate provider.",
+        });
+      }
+    } else {
+      account = await AuthModel.findOne({ email: normalizedEmail });
+      if (!account) {
+        return res.json({ success: false, message: "Invalid email or password" });
+      }
+      if (!account.password) {
+        return res.json({
+          success: false,
+          message: "This account was created with Google login. Please sign in with Google.",
+        });
+      }
     }
-    if (!user.password) {
-      return res.json({
-        success: false,
-        message: "This account was created with Google login. Please sign in with Google.",
-      });
-    }
-    const isMatch = await bcrypt.compare(password, user.password);
+
+    const isMatch = await bcrypt.compare(password, account.password);
     if (!isMatch) {
       return res.json({ success: false, message: "Invalid email or password" });
     }
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+
+    const token = jwt.sign({ id: account._id, role }, process.env.JWT_SECRET, {
       expiresIn: "2d",
     });
     res.cookie("token", token, {
@@ -81,7 +99,13 @@ export const AuthLogin = async (req, res) => {
     return res.json({
       success: true,
       message: "Login successful",
-      user: { id: user._id, name: user.name, email: user.email },
+      role,
+      user: {
+        id: account._id,
+        name: account.name,
+        email: account.email,
+        role,
+      },
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
