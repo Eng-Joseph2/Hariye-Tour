@@ -1,6 +1,7 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
 
+// Components & Pages
 import Home from "./pages/Home";
 import Tours from "./pages/Tours";
 import Login from "./pages/Login";
@@ -21,12 +22,20 @@ import Ticket from "./pages/Ticket";
 import VerifyTicket from "./pages/VerifyTicket";
 import Setting from "./Dashbord/setting";
 
+// --- 1. PROTECTED ROUTE COMPONENT ---
+const AdminProtectedRoute = ({ user }) => {
+  // If no user or the role is not Admin/SuperAdmin, send to login
+  if (!user || (user.role !== "Admin" && user.role !== "SuperAdmin")) {
+    return <Navigate to="/login" replace />;
+  }
+  // If admin, allow them to see the page (Outlet)
+  return <Outlet />;
+};
+
 const App = () => {
-  // 1. Hubi user-ka si ammaan ah (Safe JSON parsing)
   const [user, setUser] = useState(() => {
     try {
       const saved = localStorage.getItem("user");
-      // Kaliya parse garee haddii xogtu tahay JSON sax ah, haddii kale null
       return saved && saved !== "undefined" ? JSON.parse(saved) : null;
     } catch (error) {
       console.error("LocalStorage Parse Error:", error);
@@ -34,22 +43,23 @@ const App = () => {
     }
   });
 
-  // 2. Dhagayso dhacdada "userLogin" si App-ka loo cusboonaysiiyo
   useEffect(() => {
     const checkUser = () => {
       try {
         const saved = localStorage.getItem("user");
-        const parsedUser =
-          saved && saved !== "undefined" ? JSON.parse(saved) : null;
+        const parsedUser = saved && saved !== "undefined" ? JSON.parse(saved) : null;
         setUser(parsedUser);
       } catch (error) {
         setUser(null);
-        console.log(error);
       }
     };
 
     window.addEventListener("userLogin", checkUser);
-    return () => window.removeEventListener("userLogin", checkUser);
+    window.addEventListener("storage", checkUser); // Also listen for storage changes
+    return () => {
+      window.removeEventListener("userLogin", checkUser);
+      window.removeEventListener("storage", checkUser);
+    };
   }, []);
 
   return (
@@ -70,19 +80,19 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/auth-success" element={<AuthSuccess />} />
-
-        {/* --- ADMIN ROUTES (NO NAVBAR) --- */}
         <Route path="/admin/login" element={<DashbordLogin />} />
 
-        {/* Dashboard Pages */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin-dash" element={<DivideDash />} />
-        <Route path="/admin/dash/Tour" element={<TourTable />} />
-        <Route path="/admin/dash/Tour/Add-tour" element={<AddTour />} />
-        <Route path="/admin/dash/BookingTable" element={<BookingTable />} />
-        <Route path="/admin/settings" element={<Setting />} />
-        <Route path="/admin/customers" element={<CustomerTable />} />
-        <Route path="/admin/verify-ticket/:id" element={<VerifyTicket />} />
+        {/* --- PROTECTED ADMIN ROUTES --- */}
+        <Route element={<AdminProtectedRoute user={user} />}>
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin-dash" element={<DivideDash />} />
+          <Route path="/admin/dash/Tour" element={<TourTable />} />
+          <Route path="/admin/dash/Tour/Add-tour" element={<AddTour />} />
+          <Route path="/admin/dash/BookingTable" element={<BookingTable />} />
+          <Route path="/admin/settings" element={<Setting />} />
+          <Route path="/admin/customers" element={<CustomerTable />} />
+          <Route path="/admin/verify-ticket/:id" element={<VerifyTicket />} />
+        </Route>
 
         {/* --- 404 OR REDIRECT --- */}
         <Route path="*" element={<Navigate to="/" replace />} />
