@@ -5,9 +5,19 @@ import bcrypt from "bcryptjs";
 export const register = async (req, res) => {
   try {
     let { email, password, role } = req.body;
-    email = email.toLowerCase().trim();
+    const normalizedEmail = email?.toLowerCase().trim();
 
-    const existingAdmin = await AdminModel.findOne({ email });
+    if (!normalizedEmail || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required.",
+      });
+    }
+
+    const emailPattern = new RegExp(`^${normalizedEmail.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i");
+    const existingAdmin = await AdminModel.findOne({
+      email: { $regex: emailPattern },
+    });
     if (existingAdmin) {
       return res.status(400).json({
         success: false,
@@ -15,7 +25,7 @@ export const register = async (req, res) => {
       });
     }
 
-    const newAdmin = await AdminModel.create({ email, password, role });
+    const newAdmin = await AdminModel.create({ email: normalizedEmail, password, role });
     res.status(201).json({ success: true, message: newAdmin });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -32,10 +42,13 @@ export const login = async (req, res) => {
         .json({ success: false, message: "Email and password are required." });
     }
 
-    email = email.toLowerCase().trim();
+    const normalizedEmail = email?.toLowerCase().trim();
+    const emailPattern = new RegExp(`^${normalizedEmail.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i");
 
     // 1. Raadi admin-ka
-    const admin = await AdminModel.findOne({ email });
+    const admin = await AdminModel.findOne({
+      email: { $regex: emailPattern },
+    });
     if (!admin) {
       return res
         .status(401)
