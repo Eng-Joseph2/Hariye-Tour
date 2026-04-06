@@ -1,6 +1,6 @@
 import express from "express";
 import {
-  AuthLogin,
+  Login,
   AuthLogout,
   AuthRegister,
   deleteUser,
@@ -9,7 +9,7 @@ import {
 
 const router = express.Router();
 router.post("/register", AuthRegister);
-router.post("/login", AuthLogin);
+router.post("/login", Login);
 router.get("/readAuth", ReadAuth);
 router.post("/logout", AuthLogout);
 router.delete("/delete/:id", deleteUser);
