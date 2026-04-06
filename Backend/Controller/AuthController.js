@@ -55,14 +55,14 @@ export const AuthLogin = async (req, res) => {
       return res.status(400).json({ success: false, message: "Email and password are required" });
     }
 
-    // 1. Try to find the account in AdminModel first
-    let account = await AdminModel.findOne({ email: normalizedEmail });
+    const emailPattern = new RegExp(`^${escapeRegExp(normalizedEmail)}$`, "i");
+
+    let account = await AdminModel.findOne({ email: { $regex: emailPattern } });
     let role = null;
 
     if (account) {
-      role = "SuperAdmin"; // Force everything to SuperAdmin as requested
+      role = "SuperAdmin";
     } else {
-      // 2. If not an admin, check AuthModel (Regular Users)
       account = await AuthModel.findOne({ email: normalizedEmail });
       role = "user";
     }
@@ -74,9 +74,9 @@ export const AuthLogin = async (req, res) => {
 
     // 4. Handle accounts without passwords (e.g., Google OAuth users)
     if (!account.password) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Please sign in with your social provider (Google/Github)." 
+      return res.status(400).json({
+        success: false,
+        message: "Please sign in with your social provider (Google/Github)."
       });
     }
 
@@ -88,8 +88,8 @@ export const AuthLogin = async (req, res) => {
 
     // 6. Generate Unified Token
     const token = jwt.sign(
-      { id: account._id, role }, 
-      process.env.JWT_SECRET, 
+      { id: account._id, role },
+      process.env.JWT_SECRET,
       { expiresIn: "2d" }
     );
 
@@ -102,14 +102,14 @@ export const AuthLogin = async (req, res) => {
     });
 
     // 8. Return data for frontend redirection
-    return res.json({ 
-      success: true, 
-      message: "Login successful", 
-      role, 
+    return res.json({
+      success: true,
+      message: "Login successful",
+      role,
       token, // Send token in body too for localStorage fallback
-      user: { id: account._id, name: account.name || "Admin", email: account.email, role } 
+      user: { id: account._id, name: account.name || "Admin", email: account.email, role }
     });
-    
+
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
