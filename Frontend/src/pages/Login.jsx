@@ -13,35 +13,37 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+
   // Login.jsx
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+
     try {
       const response = await axios.post(
         "https://hariye-tour-agency.onrender.com/api/login",
-        formData
+        formData,
+        {
+          withCredentials: true, // ✅ MOVE IT HERE
+        }
       );
 
-      if (response.data.success) {
-        const { token, user, role } = response.data;
+      const { token, user, role } = response.data;
 
-        // Save data
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
-        // Update App state
-        window.dispatchEvent(new Event("userLogin"));
+      window.dispatchEvent(new Event("userLogin"));
 
-        // REDIRECTION LOGIC
-        if (role === "SuperAdmin") {
-          alert("Welcome, Admin!");
-          navigate("/admin-dash");
-        } else {
-          navigate("/");
-        }
+      if (role === "SuperAdmin") {
+        alert("Welcome, Admin!");
+        navigate("/admin-dash");
+      } else {
+        navigate("/");
       }
+
     } catch (error) {
+      console.log("ERROR:", error); // 🔥 ADD THIS
       alert(error.response?.data?.message || "Login failed");
     } finally {
       setIsLoading(false);

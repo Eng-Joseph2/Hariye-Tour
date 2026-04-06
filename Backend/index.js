@@ -12,7 +12,12 @@ import "./config/passport.js";
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "https://hariye-tour-agency.vercel.app"],
+    credentials: true,
+  })
+);
 app.use(passport.initialize());
 connectDb();
 
