@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { FaMapMarkerAlt, FaEnvelope, FaPhoneAlt } from "react-icons/fa";
 
 function Footer() {
@@ -30,7 +31,6 @@ function Footer() {
               />
             </svg>
 
-            {/* Text with Gradient Logic */}
             <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-[#22c55e] to-[#33c86a] bg-clip-text text-transparent">
               Hariye Tour Agency
             </span>
@@ -65,14 +65,20 @@ function Footer() {
         <div>
           <h3 className="text-white font-bold mb-6 text-lg">Quick Links</h3>
           <ul className="space-y-3 text-sm">
-            <li className="hover:text-emerald-500 cursor-pointer transition">
-              Browse Tours
+            <li>
+              <Link to="/tours" className="hover:text-emerald-500 transition">
+                Browse Tours
+              </Link>
             </li>
-            <li className="hover:text-emerald-500 cursor-pointer transition">
-              My Bookings
+            <li>
+              <Link to="/bookings" className="hover:text-emerald-500 transition">
+                My Bookings
+              </Link>
             </li>
-            <li className="hover:text-emerald-500 cursor-pointer transition">
-              Login
+            <li>
+              <Link to="/login" className="hover:text-emerald-500 transition">
+                Login
+              </Link>
             </li>
           </ul>
         </div>
@@ -81,10 +87,8 @@ function Footer() {
           <h3 className="text-white font-bold mb-6 text-lg">Contact</h3>
           <ul className="space-y-4 text-sm">
             <li className="flex items-center gap-3">
-              {/* Wrapper for the icon */}
               <span className="flex items-center justify-center bg-gradient-to-r from-[#22c55e] to-[#059669] bg-clip-text text-transparent">
                 <FaEnvelope className="w-4 h-4 fill-[#22c55e]" style={{ fill: 'url(#contact-gradient)' }} />
-                {/* We use a small SVG hack to define the gradient for the icon to use */}
                 <svg width="0" height="0" className="absolute">
                   <linearGradient id="contact-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop stopColor="#22c55e" offset="0%" />

@@ -100,7 +100,7 @@ function Calender() {
         {Array.from({ length: daysInMonth }).map((_, i) => {
           const day = i + 1;
 
-          const isSpecialDay = day === 9;
+          const isSpecialDay = day === currDate.getDate() && currDate.getMonth() === new Date().getMonth() && currDate.getFullYear() === new Date().getFullYear();
           const isSelected = day === selectedDay;
 
           return (
@@ -108,8 +108,8 @@ function Calender() {
               key={day}
               onClick={() => setSelectedDay(day)}
               className={`h-12 flex items-center justify-center cursor-pointer text-sm font-bold transition-all duration-200
-                ${isSpecialDay ? "bg-[#0f9f6e] text-gray-800" : ""} 
-                ${isSelected ? "bg-[#1e293b] text-[#0066cc]" : ""}
+                ${isSpecialDay ? "bg-[#0f9f6e] text-white" : ""} 
+                ${isSelected ? "bg-[#1e293b] text-[#fff]" : ""}
                 ${!isSpecialDay && !isSelected ? "text-gray-700 hover:bg-gray-50" : ""}
                 ${(i + firstDayOfMonth) % 7 === 5 || (i + firstDayOfMonth) % 7 === 6 ? "text-red-500" : ""}
               `}

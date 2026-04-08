@@ -139,12 +139,16 @@ function TourTable() {
                     <td className="p-4">
                       <span
                         className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
-                          tour.status === "Active"
-                            ? "bg-emerald-100 text-emerald-700"
-                            : "bg-red-100 text-red-700"
+                          tour.status === "upcoming"
+                            ? "bg-green-100 text-green-700"
+                            : tour.status === "ongoing"
+                              ? "bg-blue-100 text-blue-700"
+                              : tour.status === "completed"
+                                ? "bg-gray-100 text-gray-700"
+                                : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {tour.status === "Active" ? "ACTIVE" : "INACTIVE"}
+                        {tour.status?.toUpperCase()}
                       </span>
                     </td>
                     <td className="p-4">

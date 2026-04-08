@@ -1,17 +1,24 @@
 import express from "express";
 import {
-  AuthLogin,
-  AuthLogout,
-  AuthRegister,
+  loginUser,
+  registerUser,
+  registerAdmin,
+  readUsers,
+  readCustomers,
+  readAdmins,
   deleteUser,
-  ReadAuth,
+  updateProfile,
 } from "../Controller/AuthController.js";
 
 const router = express.Router();
-router.post("/register", AuthRegister);
-router.post("/login", AuthLogin);
-router.get("/readAuth", ReadAuth);
-router.post("/logout", AuthLogout);
-router.delete("/delete/:id", deleteUser);
+
+router.post("/auth/login", loginUser);
+router.post("/auth/register", registerUser);
+router.post("/auth/register-admin", registerAdmin);
+router.get("/readAuth", readUsers); // keep for backward compatibility
+router.get("/readUser", readCustomers);
+router.get("/readAdmin", readAdmins);
+router.put("/auth/update-profile", updateProfile);
 router.delete("/deleteUser/:id", deleteUser);
+
 export default router;

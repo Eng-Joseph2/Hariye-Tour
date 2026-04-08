@@ -24,7 +24,7 @@ const sidebarLinks = [
     path: "/admin/dash/BookingTable",
   },
   {
-    name: "Tour Accepted",
+    name: "Accepted Bookings",
     icon: <ClipboardList size={20} />,
     path: "/admin/requests",
   },
@@ -74,16 +74,16 @@ function SideBar() {
         })}
       </nav>
 
-      {/* Logout Button */}
+      {/* Dashboard Home Button */}
       <div className="pt-4 border-t border-slate-800">
-        <Link to="/admin/login">
-          <button className="w-full flex items-center gap-3 px-3 py-3 text-red-400 hover:bg-red-500/10 rounded-xl transition-all group">
+        <Link to="/admin-dash">
+          <button className="w-full flex items-center gap-3 px-3 py-3 text-emerald-400 hover:bg-emerald-500/10 rounded-xl transition-all group">
             <LogOut
               size={20}
               className="group-hover:scale-110 transition-transform"
             />
             <span className="hidden lg:block font-medium text-[14px]">
-              Sign Out
+              Dashboard Home
             </span>
           </button>
         </Link>

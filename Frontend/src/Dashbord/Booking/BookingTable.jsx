@@ -9,6 +9,8 @@ import {
   UserCheck,
   Loader2,
   RefreshCw,
+  Eye,
+  X,
 } from "lucide-react";
 import axios from "axios";
 
@@ -16,6 +18,7 @@ function BookingTable() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
+  const [selectedBooking, setSelectedBooking] = useState(null);
 
   // 1. Data fetch function (it reverses the list)
   const fetchBookings = useCallback(async () => {
@@ -68,6 +71,14 @@ function BookingTable() {
         setActionLoading(null);
       }
     }
+  };
+
+  const handleShowTourInfo = (booking) => {
+    setSelectedBooking(booking);
+  };
+
+  const handleCloseTourInfo = () => {
+    setSelectedBooking(null);
   };
 
   if (loading) {
@@ -193,6 +204,14 @@ function BookingTable() {
                           </>
                         )}
                       </div>
+                      <div className="flex justify-center mt-3">
+                        <button
+                          onClick={() => handleShowTourInfo(booking)}
+                          className="flex items-center gap-1 px-3 py-2 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-800 hover:text-white transition-all"
+                        >
+                          <Eye size={14} /> Tour Info
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -201,6 +220,58 @@ function BookingTable() {
           </div>
         </div>
       </div>
+      {selectedBooking && (
+        <div className="fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between border-b border-slate-200 p-6">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">Tour Info</h2>
+                <p className="text-sm text-slate-500">Details for the selected booking.</p>
+              </div>
+              <button
+                onClick={handleCloseTourInfo}
+                className="text-slate-500 hover:text-slate-900"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-slate-500 text-xs uppercase tracking-[.2em] mb-2">Tour Name</p>
+                  <p className="text-slate-800 font-semibold">{selectedBooking.tourId?.title || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-xs uppercase tracking-[.2em] mb-2">Price</p>
+                  <p className="text-slate-800 font-semibold">${selectedBooking.tourId?.price || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-xs uppercase tracking-[.2em] mb-2">Location</p>
+                  <p className="text-slate-800 font-semibold">{selectedBooking.tourId?.city}, {selectedBooking.tourId?.country}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-xs uppercase tracking-[.2em] mb-2">Duration</p>
+                  <p className="text-slate-800 font-semibold">{selectedBooking.tourId?.duration || "N/A"}</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-slate-500 text-xs uppercase tracking-[.2em] mb-2">Tour Description</p>
+                <p className="text-slate-700 text-sm leading-relaxed">{selectedBooking.tourId?.description || "No description available."}</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <p className="text-slate-500 text-xs uppercase tracking-[.2em] mb-2">Start Day</p>
+                  <p className="text-slate-800 font-semibold">{new Date(selectedBooking.tourId?.startDay).toLocaleDateString() || "N/A"}</p>
+                </div>
+                <div>
+                  <p className="text-slate-500 text-xs uppercase tracking-[.2em] mb-2">Status</p>
+                  <p className="text-slate-800 font-semibold">{selectedBooking.status?.toUpperCase()}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

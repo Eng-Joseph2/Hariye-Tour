@@ -13,6 +13,7 @@ function DivideDash() {
   const [data, setData] = useState([]);
   const [Auths, setAuth] = useState([]);
   const [Booking, setBooking] = useState([]);
+  const [stats, setStats] = useState({ acceptedTours: 0 });
 
   const HandalReadTour = () => {
     axios
@@ -40,11 +41,20 @@ function DivideDash() {
       })
       .catch((error) => console.log("Booking Fetch Error:", error));
   };
+  const HandalGetStats = () => {
+    axios
+      .get("https://hariye-tour-agency.onrender.com/api/getStats")
+      .then((res) => {
+        setStats(res.data.data);
+      })
+      .catch((error) => console.log("Stats Fetch Error:", error));
+  };
 
   useEffect(() => {
     HandalReadTour();
     HandalAuthTour();
     HandalReadBooking(); // Added this missing call
+    HandalGetStats();
   }, []);
 
   return (
@@ -70,7 +80,7 @@ function DivideDash() {
                 count={Auths.length}
                 title="Customers"
               />
-              <UserCard bg="bg-slate-800" count="1,323" title="Requests" />
+              <UserCard bg="bg-slate-800" count={stats.acceptedTours} title="Accepted Bookings" />
             </div>
             <div className="flex space-x-3">
               <BoysAndGirlsChart />

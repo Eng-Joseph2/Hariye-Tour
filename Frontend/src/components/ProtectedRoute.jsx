@@ -1,13 +1,25 @@
-// import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
-// const ProtectedRoute = ({ children }) => {
-//   const user = localStorage.getItem("user");
+export const ProtectedRoute = ({ children }) => {
+  const { user } = useAuth();
+  const location = useLocation();
 
-//   if (!user) {
-//     return <Navigate to="/" replace />;
-//   }
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
-//   return children;
-// };
+  return children;
+};
 
-// export default ProtectedRoute;
+export const AdminRoute = ({ children }) => {
+  const { user } = useAuth();
+  const location = useLocation();
+  const isAdmin = user && ["admin", "superadmin"].includes(user.role?.toLowerCase());
+
+  if (!isAdmin) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return children;
+};

@@ -20,7 +20,8 @@ const AddTour = ({ isOpen, onClose, onSubmit, editData }) => {
     endDay: "",
     max_Gust: "15",
     Available_Spots: "15",
-    status: "Active",
+    status: "upcoming",
+    level: "standard",
     desc: "",
     Highlights: "",
   });
@@ -43,7 +44,8 @@ const AddTour = ({ isOpen, onClose, onSubmit, editData }) => {
           endDay: "",
           max_Gust: "",
           Available_Spots: "",
-          status: "Active",
+          status: "upcoming",
+          level: "standard",
           desc: "",
           Highlights: "",
         });
@@ -264,8 +266,8 @@ const AddTour = ({ isOpen, onClose, onSubmit, editData }) => {
               </div>
             </div>
 
-            {/* Spots & Status */}
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            {/* Spots, Status & Level */}
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-4">
               <div className="w-full">
                 <label className="block text-sm font-semibold mb-1.5 text-slate-700">
                   Max Guests *
@@ -292,9 +294,15 @@ const AddTour = ({ isOpen, onClose, onSubmit, editData }) => {
               </div>
               <CustomSelect
                 label="Status *"
-                options={["Active", "InActive"]}
+                options={["upcoming", "ongoing", "completed", "cancelled"]}
                 value={formData.status}
                 onChange={(val) => setFormData({ ...formData, status: val })}
+              />
+              <CustomSelect
+                label="Level *"
+                options={["premier", "new", "standard"]}
+                value={formData.level}
+                onChange={(val) => setFormData({ ...formData, level: val })}
               />
             </div>
 

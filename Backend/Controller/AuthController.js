@@ -1,191 +1,252 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import AuthModel from "../Models/AuthModel.js";
-import AdminModel from "../Models/AdminModel.js";
+import crypto from "crypto";
+import User from "../Models/UserModel.js";
 
-const normalizeEmail = (email) =>
-  typeof email === "string" ? email.toLowerCase().trim() : "";
+const HASH_ITERATIONS = 100000;
+const KEY_LENGTH = 64;
+const DIGEST = "sha512";
 
-const generateToken = (userId, role) =>
-  jwt.sign({ id: userId, role }, process.env.JWT_SECRET, { expiresIn: "2d" });
+const createPasswordHash = (password) => {
+  const salt = crypto.randomBytes(16).toString("hex");
+  const hash = crypto
+    .pbkdf2Sync(password, salt, HASH_ITERATIONS, KEY_LENGTH, DIGEST)
+    .toString("hex");
+  return `${salt}:${hash}`;
+};
 
-const buildUserResponse = (user, role) => ({
-  id: user._id,
+const verifyPassword = (password, storedHash) => {
+  if (!storedHash) return false;
+
+  const [salt, hash] = storedHash.split(":");
+  if (!salt || !hash) return false;
+
+  const verify = crypto
+    .pbkdf2Sync(password, salt, HASH_ITERATIONS, KEY_LENGTH, DIGEST)
+    .toString("hex");
+
+  return verify === hash;
+};
+
+const sanitizeUser = (user) => ({
+  _id: user._id,
+  name: user.name,
   email: user.email,
-  name: user.name || (role === "SuperAdmin" ? "Admin" : "User"),
-  role,
+  role: user.role,
 });
 
-export const AuthRegister = async (req, res) => {
+export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const normalizedEmail = normalizeEmail(email);
 
-    if (!name || !normalizedEmail || !password) {
-      return res.status(400).json({ message: "All fields required" });
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        message: "Please provide full name, email, and password.",
+      });
     }
 
-    const existingUser = await AuthModel.findOne({ email: normalizedEmail });
+    const normalizedEmail = email.toLowerCase().trim();
+    const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
-      return res.status(409).json({ message: "Email is already registered" });
+      return res.status(409).json({ message: "Email already exists." });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await AuthModel.create({
-      name,
+    const passwordHash = createPasswordHash(password);
+    const newUser = await User.create({
+      name: name.trim(),
       email: normalizedEmail,
-      password: hashedPassword,
+      passwordHash,
+      role: "user",
     });
 
-    const token = generateToken(newUser._id, "user");
     return res.status(201).json({
-      success: true,
-      token,
-      role: "user",
-      user: buildUserResponse(newUser, "user"),
+      message: "Registration successful.",
+      data: sanitizeUser(newUser),
     });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "Server error" });
+  } catch (error) {
+    console.error("Register user error:", error);
+    return res.status(500).json({ message: "Unable to register user." });
   }
 };
 
-export const AuthLogin = async (req, res) => {
+export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const normalizedEmail = normalizeEmail(email);
 
-    if (!normalizedEmail || !password) {
-      return res.status(400).json({ message: "All fields required" });
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required." });
     }
 
-    const user = await AuthModel.findOne({ email: normalizedEmail });
-    if (!user) {
-      return res.status(401).json({ message: "Invalid email or password" });
+    const normalizedEmail = email.toLowerCase().trim();
+    const user = await User.findOne({ email: normalizedEmail });
+
+    if (!user || !verifyPassword(password, user.passwordHash)) {
+      return res.status(401).json({ message: "Invalid email or password." });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password || "");
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
-
-    const token = generateToken(user._id, "user");
-    return res.json({
-      success: true,
-      token,
-      role: "user",
-      user: buildUserResponse(user, "user"),
+    return res.status(200).json({
+      message: "Login successful.",
+      data: sanitizeUser(user),
     });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "Server error" });
+  } catch (error) {
+    console.error("Login user error:", error);
+    return res.status(500).json({ message: "Unable to log in." });
   }
 };
 
-export const ReadAuth = async (req, res) => {
+export const readUsers = async (req, res) => {
   try {
-    const users = await AuthModel.find({}, "-password -__v");
-    return res.json({ success: true, data: users });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "Server error" });
+    const users = await User.find({}, "name email role").lean();
+    return res.status(200).json({ message: "Users fetched.", data: users });
+  } catch (error) {
+    console.error("Read users error:", error);
+    return res.status(500).json({ message: "Unable to fetch users." });
   }
 };
 
-export const AuthLogout = async (req, res) => {
+export const readCustomers = async (req, res) => {
   try {
-    return res.json({ success: true, message: "Logged out successfully" });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "Server error" });
+    const users = await User.find({ role: "user" }, "name email role").sort({ createdAt: -1 }).lean();
+    return res.status(200).json({ message: "Customers fetched.", data: users });
+  } catch (error) {
+    console.error("Read customers error:", error);
+    return res.status(500).json({ message: "Unable to fetch customers." });
+  }
+};
+
+export const readAdmins = async (req, res) => {
+  try {
+    const users = await User.find({ role: { $in: ["admin", "superadmin"] } }, "name email role").sort({ createdAt: -1 }).lean();
+    return res.status(200).json({ message: "Admins fetched.", data: users });
+  } catch (error) {
+    console.error("Read admins error:", error);
+    return res.status(500).json({ message: "Unable to fetch admins." });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { id, name, email, currentPassword, newPassword } = req.body;
+
+    if (!id || !name || !email) {
+      return res.status(400).json({ message: "ID, name, and email are required." });
+    }
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // If changing password, verify current password
+    if (newPassword) {
+      if (!currentPassword || !verifyPassword(currentPassword, user.passwordHash)) {
+        return res.status(401).json({ message: "Current password is incorrect." });
+      }
+      user.passwordHash = createPasswordHash(newPassword);
+    }
+
+    user.name = name.trim();
+    user.email = email.toLowerCase().trim();
+    await user.save();
+
+    return res.status(200).json({
+      message: "Profile updated successfully.",
+      data: sanitizeUser(user),
+    });
+  } catch (error) {
+    console.error("Update profile error:", error);
+    return res.status(500).json({ message: "Unable to update profile." });
   }
 };
 
 export const deleteUser = async (req, res) => {
   try {
-    const { id } = req.params;
-    const deletedUser = await AuthModel.findByIdAndDelete(id);
-
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
     if (!deletedUser) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found." });
     }
 
-    return res.json({ success: true, message: "User removed" });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "Server error" });
+    return res.status(200).json({ message: "User deleted successfully." });
+  } catch (error) {
+    console.error("Delete user error:", error);
+    return res.status(500).json({ message: "Unable to delete user." });
   }
 };
 
-export const AdminRegister = async (req, res) => {
+export const registerAdmin = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const normalizedEmail = normalizeEmail(email);
+    const { name, email, password, role = "admin" } = req.body;
+    const requestedBySuperAdmin = req.headers["x-super-admin"] === "true";
 
-    if (!normalizedEmail || !password) {
-      return res.status(400).json({ message: "All fields required" });
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        message: "Name, email, password, and role are required.",
+      });
     }
 
-    const existingAdmin = await AdminModel.findOne({ email: normalizedEmail });
-    if (existingAdmin) {
-      return res.status(409).json({ message: "Admin already exists" });
+    const normalizedRole = role.toLowerCase().replace(" ", "");
+    const targetRole = normalizedRole === "superadmin" ? "superadmin" : "admin";
+    const adminCount = await User.countDocuments({
+      role: { $in: ["admin", "superadmin"] },
+    });
+
+    if (adminCount > 0 && !requestedBySuperAdmin) {
+      return res.status(403).json({
+        message: "Only a super admin can create additional admin accounts.",
+      });
     }
 
-    const newAdmin = await AdminModel.create({
+    const normalizedEmail = email.toLowerCase().trim();
+    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (existingUser) {
+      return res.status(409).json({ message: "Email already exists." });
+    }
+
+    const passwordHash = createPasswordHash(password);
+    const newAdmin = await User.create({
+      name: name.trim(),
       email: normalizedEmail,
-      password,
+      passwordHash,
+      role: targetRole,
     });
 
-    const token = generateToken(newAdmin._id, "SuperAdmin");
     return res.status(201).json({
-      success: true,
-      token,
-      role: "SuperAdmin",
-      user: buildUserResponse(newAdmin, "SuperAdmin"),
+      message: "Admin account created successfully.",
+      data: sanitizeUser(newAdmin),
     });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "Server error" });
+  } catch (error) {
+    console.error("Register admin error:", error);
+    return res.status(500).json({ message: "Unable to create admin account." });
   }
 };
 
-export const AdminLogin = async (req, res) => {
+export const seedInitialSuperAdmin = async () => {
   try {
-    const { email, password } = req.body;
-    const normalizedEmail = normalizeEmail(email);
-
-    if (!normalizedEmail || !password) {
-      return res.status(400).json({ message: "All fields required" });
+    const existingSuperAdmin = await User.findOne({ role: "superadmin" });
+    if (existingSuperAdmin) {
+      return;
     }
 
-    const admin = await AdminModel.findOne({ email: normalizedEmail });
-    if (!admin) {
-      return res.status(401).json({ message: "Invalid email or password" });
+    const email =
+      process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase() ||
+      "superadmin@hariye.com";
+    const password = process.env.SUPER_ADMIN_PASSWORD || "SuperAdmin123!";
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return;
     }
 
-    const isMatch = await bcrypt.compare(password, admin.password || "");
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
-
-    const token = generateToken(admin._id, "SuperAdmin");
-    return res.json({
-      success: true,
-      token,
-      role: "SuperAdmin",
-      user: buildUserResponse(admin, "SuperAdmin"),
+    const passwordHash = createPasswordHash(password);
+    await User.create({
+      name: "Super Admin",
+      email,
+      passwordHash,
+      role: "superadmin",
     });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "Server error" });
-  }
-};
 
-export const AdminLogout = async (req, res) => {
-  try {
-    return res.json({ success: true, message: "Admin logged out successfully" });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({ message: "Server error" });
+    console.log(
+      `Super admin seeded: ${email} / ${password} (change via env vars)`,
+    );
+  } catch (error) {
+    console.error("Super admin seed error:", error);
   }
 };

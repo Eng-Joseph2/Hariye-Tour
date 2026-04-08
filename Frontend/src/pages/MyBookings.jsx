@@ -9,45 +9,32 @@ import {
 } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 import axios from "axios";
 
 const MyBookings = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [bookings, setBookings] = useState([]);
 
   const [loading, setLoading] = useState(true);
 
   const fetchMyBookings = useCallback(async () => {
-    const loggedInUser = JSON.parse(localStorage.getItem("user"));
-
-    const userEmail = loggedInUser?.email;
-
-    if (!userEmail) {
-      console.error("No user email found. Please log in.");
-
-      setLoading(false);
-
-      return;
-    }
-
     try {
-      const res = await axios.get(
-        "https://hariye-tour-agency.onrender.com/api/readBooking",
-      );
+      const url = user?.email
+        ? `https://hariye-tour-agency.onrender.com/api/readBooking?email=${encodeURIComponent(user.email)}`
+        : "https://hariye-tour-agency.onrender.com/api/readBooking";
 
-      const myData = res.data.data.filter((b) => b.email === userEmail);
-
-      console.log("My Filtered Bookings:", myData);
-
-      setBookings(myData);
+      const res = await axios.get(url);
+      setBookings(res.data.data || []);
     } catch (error) {
       console.error("Error fetching bookings:", error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.email]);
 
   useEffect(() => {
     fetchMyBookings();

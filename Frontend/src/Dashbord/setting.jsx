@@ -1,28 +1,74 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaUser, FaEnvelope, FaLock, FaCamera, FaSave } from "react-icons/fa";
 import Menu from "./Menu";
 import AdminAvatar from "./AdminAvatar";
+import { useAuth } from "../context/AuthContext";
+import API from "../services/api";
 
 function Setting() {
-  // Load admin data from LocalStorage before rendering
-  const savedAdmin = JSON.parse(localStorage.getItem("adminUser"));
-
-  const [admin, setAdmin] = useState({
-    username: savedAdmin ? savedAdmin.email.split("@")[0] : "",
-    email: savedAdmin ? savedAdmin.email : "",
+  const { user, login } = useAuth();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
     currentPassword: "",
     newPassword: "",
   });
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        currentPassword: "",
+        newPassword: "",
+      });
+    }
+  }, [user]);
 
   const handleChange = (e) => {
-    setAdmin({ ...admin, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
-    alert("Success: Your information has been updated!");
-    // Halkan waxaad ku dari kartaa axios.put si aad database ugu xirto
+    setLoading(true);
+
+    try {
+      const updateData = {
+        id: user._id,
+        name: formData.name,
+        email: formData.email,
+      };
+
+      if (formData.newPassword) {
+        updateData.currentPassword = formData.currentPassword;
+        updateData.newPassword = formData.newPassword;
+      }
+
+      const res = await API.put("/auth/update-profile", updateData);
+      login(res.data.data); // update auth context
+      alert("Profile updated successfully!");
+      setFormData({ ...formData, currentPassword: "", newPassword: "" });
+    } catch (error) {
+      console.error("Update error:", error);
+      alert(
+        error.response?.data?.message || "Failed to update profile. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
+  const initials = user.name
+    .split(" ")
+    .map((part) => part[0]?.toUpperCase())
+    .join("")
+    .slice(0, 2);
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans">
@@ -39,7 +85,7 @@ function Setting() {
               Admin Settings
             </h1>
             <p className="text-slate-500 text-sm font-medium">
-              Maamul profile-kaaga iyo amaanka account-ka.
+              Manage your profile and account security.
             </p>
           </div>
 
@@ -59,10 +105,10 @@ function Setting() {
                 </div>
               </div>
               <h3 className="mt-6 font-black text-slate-800 text-xl capitalize">
-                {admin.username}
+                {user.name}
               </h3>
               <p className="text-emerald-600 font-bold text-xs bg-emerald-50 px-4 py-1 rounded-full mt-2 uppercase">
-                Super Admin
+                {user.role === "superadmin" ? "Super Admin" : "Admin"}
               </p>
             </div>
 
@@ -76,11 +122,12 @@ function Setting() {
                     </label>
                     <div className="relative">
                       <input
-                        name="username"
+                        name="name"
                         type="text"
                         className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all font-bold text-slate-700"
-                        value={admin.username}
+                        value={formData.name}
                         onChange={handleChange}
+                        required
                       />
                       <FaUser className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" />
                     </div>
@@ -95,8 +142,9 @@ function Setting() {
                         name="email"
                         type="email"
                         className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all font-bold text-slate-700"
-                        value={admin.email}
+                        value={formData.email}
                         onChange={handleChange}
+                        required
                       />
                       <FaEnvelope className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" />
                     </div>
@@ -118,6 +166,7 @@ function Setting() {
                           type="password"
                           className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:border-emerald-500 outline-none transition-all"
                           placeholder="••••••••"
+                          value={formData.currentPassword}
                           onChange={handleChange}
                         />
                         <FaLock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" />
@@ -133,6 +182,7 @@ function Setting() {
                           type="password"
                           className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:border-emerald-500 outline-none transition-all"
                           placeholder="Enter new password"
+                          value={formData.newPassword}
                           onChange={handleChange}
                         />
                         <FaLock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300" />
@@ -144,13 +194,15 @@ function Setting() {
                 <div className="flex gap-4 pt-6">
                   <button
                     type="submit"
-                    className="flex-1 bg-emerald-600 text-white font-black py-4 rounded-2xl hover:bg-emerald-700 shadow-lg shadow-emerald-100 transition-all active:scale-95 flex items-center justify-center gap-2"
+                    disabled={loading}
+                    className="flex-1 bg-emerald-600 text-white font-black py-4 rounded-2xl hover:bg-emerald-700 shadow-lg shadow-emerald-100 transition-all active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50"
                   >
-                    <FaSave /> Save Changes
+                    <FaSave /> {loading ? "Saving..." : "Save Changes"}
                   </button>
                   <button
                     type="button"
                     className="px-8 bg-slate-100 text-slate-500 font-bold py-4 rounded-2xl hover:bg-slate-200 transition-all"
+                    onClick={() => setFormData({ ...formData, currentPassword: "", newPassword: "" })}
                   >
                     Cancel
                   </button>

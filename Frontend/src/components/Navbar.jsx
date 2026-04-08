@@ -1,68 +1,12 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { FaBars, FaTimes, FaSignOutAlt, FaUserCircle } from "react-icons/fa";
-import axios from "axios";
+import { useState } from "react";
+import { FaBars, FaTimes } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
-  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-
-  // 1. Safe JSON parsing si looga hortago crash
-  const [user, setUser] = useState(() => {
-    try {
-      const saved = localStorage.getItem("user");
-      // Hubi in xogtu tahay JSON sax ah oo aanay ahayn "undefined"
-      return saved && saved !== "undefined" ? JSON.parse(saved) : null;
-    } catch (e) {
-      console.error("Navbar storage error:", e);
-      return null;
-    }
-  });
-
-  useEffect(() => {
-    const updateNavbar = () => {
-      try {
-        const saved = localStorage.getItem("user");
-        const parsedUser =
-          saved && saved !== "undefined" ? JSON.parse(saved) : null;
-        setUser(parsedUser);
-      } catch (e) {
-        setUser(null);
-      }
-    };
-
-    window.addEventListener("userLogin", updateNavbar);
-    window.addEventListener("storage", updateNavbar);
-
-    return () => {
-      window.removeEventListener("userLogin", updateNavbar);
-      window.removeEventListener("storage", updateNavbar);
-    };
-  }, []);
-
-  const handleLogout = async () => {
-    try {
-      await axios.post(
-        "https://hariye-tour-agency.onrender.com/api/logout",
-        {},
-        { withCredentials: true },
-      );
-
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      localStorage.removeItem("allBookings");
-
-      setUser(null);
-      setOpen(false);
-      navigate("/login");
-    } catch (err) {
-      console.log(err);
-      localStorage.removeItem("user");
-      localStorage.removeItem("allBookings");
-      setUser(null);
-      navigate("/login");
-    }
-  };
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const navLinkStyles = ({ isActive }) =>
     `font-bold transition-colors ${
@@ -70,6 +14,19 @@ function Navbar() {
         ? "bg-gradient-to-r from-[#22c55e] to-[#059669] bg-clip-text text-transparent"
         : "text-slate-600 hover:text-emerald-500"
     }`;
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login", { replace: true });
+  };
+
+  const initials = user
+    ? user.name
+        .split(" ")
+        .map((part) => part[0]?.toUpperCase())
+        .join("")
+        .slice(0, 2)
+    : "";
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white shadow-sm z-[100] border-b border-slate-100">
@@ -120,42 +77,32 @@ function Navbar() {
           <NavLink title="My Bookings" to="/bookings" className={navLinkStyles}>
             My Bookings
           </NavLink>
-          <NavLink title="Dashbord" to="/admin/login" className={navLinkStyles}>
-            Dashbord
-          </NavLink>
-
-          {/* Conditional User Section */}
-          <div className="flex items-center gap-4 pl-6 ml-2 border-l border-slate-200">
-            {user ? (
-              <div className="flex items-center gap-3">
-                <div className="flex flex-col items-end">
-                  <span className="text-sm font-bold text-slate-900 leading-none">
-                    {/* Optional Chaining (?.) si looga hortago null error */}
-                    {user?.fullName || user?.name || "User"}
-                  </span>
-                  <button
-                    onClick={handleLogout}
-                    className="text-[11px] font-bold text-red-500 hover:underline uppercase tracking-wider mt-1"
-                  >
-                    Sign Out
-                  </button>
-                </div>
-                {/* Avatar Icon */}
-                <div className="w-10 h-10 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-700 font-bold shadow-sm">
-                  {(user?.fullName || user?.name || "U")
-                    .charAt(0)
-                    .toUpperCase()}
-                </div>
-              </div>
-            ) : (
-              <Link
-                to="/login"
-                className="bg-gradient-to-r from-[#22c55e] to-[#059669] text-white px-8 py-2.5 rounded-xl transition-all shadow-md hover:shadow-lg hover:brightness-105 active:scale-95 font-bold text-sm"
+          {user ? (
+            <>
+              {user.role !== "user" && (
+                <NavLink title="Dashboard" to="/admin-dash" className={navLinkStyles}>
+                  Dashboard
+                </NavLink>
+              )}
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="font-bold text-slate-600 hover:text-emerald-500"
               >
-                Login
-              </Link>
-            )}
-          </div>
+                Logout
+              </button>
+              <div className="hidden sm:flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-2 text-emerald-700">
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-sm font-bold text-white">
+                  {initials}
+                </span>
+                <span className="text-sm">{user.name.split(" ")[0]}</span>
+              </div>
+            </>
+          ) : (
+            <NavLink title="Login" to="/login" className={navLinkStyles}>
+              Login
+            </NavLink>
+          )}
         </div>
 
         {/* Mobile Toggle */}
@@ -190,37 +137,35 @@ function Navbar() {
             >
               My Bookings
             </NavLink>
-
-            <div className="w-[85%] pt-6 border-t flex flex-col items-center gap-4">
-              {user ? (
-                <>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xl font-bold">
-                      {(user?.fullName || user?.name || "U")
-                        .charAt(0)
-                        .toUpperCase()}
-                    </div>
-                    <span className="font-bold text-slate-800">
-                      {user?.fullName || user?.name}
-                    </span>
-                  </div>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full bg-slate-100 text-slate-700 py-4 rounded-2xl font-bold flex items-center justify-center gap-2"
-                  >
-                    <FaSignOutAlt /> Logout
-                  </button>
-                </>
-              ) : (
-                <Link
-                  to="/login"
-                  onClick={() => setOpen(false)}
-                  className="block w-full bg-emerald-600 text-white py-4 rounded-2xl font-bold text-center"
-                >
-                  Login
-                </Link>
-              )}
-            </div>
+            {user && user.role !== "user" && (
+              <NavLink
+                to="/admin-dash"
+                onClick={() => setOpen(false)}
+                className={navLinkStyles}
+              >
+                Dashboard
+              </NavLink>
+            )}
+            {user ? (
+              <button
+                type="button"
+                onClick={() => {
+                  handleLogout();
+                  setOpen(false);
+                }}
+                className="font-bold text-slate-600 hover:text-emerald-500"
+              >
+                Logout
+              </button>
+            ) : (
+              <NavLink
+                to="/login"
+                onClick={() => setOpen(false)}
+                className={navLinkStyles}
+              >
+                Login
+              </NavLink>
+            )}
           </div>
         )}
       </nav>

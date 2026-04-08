@@ -23,7 +23,7 @@ export default function TourDetails() {
   useEffect(() => {
     if (id) {
       axios
-        .get(`https://hariye-tour-agency.onrender.com/api/readSingleTour/${id}`)
+        .get(`https://hariye-tour-agency-u7bh.onrender.com/api/readSingleTour/${id}`)
         .then((res) => {
           setTour(res.data.data);
           setLoading(false);
@@ -39,68 +39,66 @@ export default function TourDetails() {
     setUserData({ ...userData, [e.target.name]: e.target.value });
   };
 
-  // ✅ CHECK IF TOUR COMPLETED
-  const isCompleted =
-    tour?.status === "InActive" ||
-    tour?.Available_Spots <= 0 ||
-    tour?.max_Gust <= 0;
+  // ✅ CHECK IF TOUR IS BOOKABLE
+  const isBookable = tour?.status === "upcoming" && tour?.Available_Spots > 0;
 
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
     if (!tour) return;
 
-    // ✅ EXTRA SAFETY CHECK
-    if (isCompleted) {
-      alert("Sorry, this tour is already completed");
+    // Client-side validation
+    if (!userData.name.trim()) {
+      alert("Please enter your full name");
       return;
     }
 
-    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+    if (!userData.email.trim()) {
+      alert("Please enter your email address");
+      return;
+    }
 
-    if (!loggedInUser) {
-      alert("Please log in before booking.");
-      navigate("/login");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userData.email)) {
+      alert("Please enter a valid email address");
+      return;
+    }
+
+    if (!userData.gender) {
+      alert("Please select your gender");
+      return;
+    }
+
+    // ✅ EXTRA SAFETY CHECK
+    if (!isBookable) {
+      alert(`Sorry, this tour is ${tour.status} and cannot be booked`);
       return;
     }
 
     try {
-      const existingBookings = JSON.parse(
-        localStorage.getItem("allBookings") || "[]",
-      );
-
-      const isAlreadyBooked = existingBookings.some(
-        (item) =>
-          item.tourId === (tour._id || id) &&
-          item.bookedBy === (loggedInUser._id || loggedInUser.id),
-      );
-
-      if (isAlreadyBooked) {
-        alert(
-          "You have already booked this tour; multiple bookings are not allowed.",
-        );
-        navigate("/bookings");
-        return;
-      }
-
       // ✅ BACKEND CALL
-      await axios.post(
-        "https://hariye-tour-agency.onrender.com/api/bookingRegister",
+      const response = await axios.post(
+        "https://hariye-tour-agency-u7bh.onrender.com/api/bookingRegister",
         {
-          full_name: userData.name,
-          email: userData.email,
+          full_name: userData.name.trim(),
+          email: userData.email.trim(),
           gender: userData.gender,
           tourId: tour._id || id,
         },
       );
 
+      // Update local storage for offline access
+      const existingBookings = JSON.parse(
+        localStorage.getItem("allBookings") || "[]",
+      );
+
       const newLocalBooking = {
         ...userData,
         tourId: tour._id || id,
-        bookedBy: loggedInUser._id || loggedInUser.id,
+        bookedBy: userData.email,
         title: tour.title,
         price: tour.price,
         image: tour.image,
-        location: tour.location || `${tour.city}, ${tour.country}`,
+        location: `${tour.city}, ${tour.country}`,
         bookedAt: new Date().toISOString(),
       };
 
@@ -111,7 +109,7 @@ export default function TourDetails() {
 
       // ✅ REAL-TIME UPDATE TOUR DATA
       const updatedTour = await axios.get(
-        `https://hariye-tour-agency.onrender.com/api/readSingleTour/${id}`,
+        `https://hariye-tour-agency-u7bh.onrender.com/api/readSingleTour/${id}`,
       );
       setTour(updatedTour.data.data);
 
@@ -119,7 +117,17 @@ export default function TourDetails() {
       navigate("/bookings");
     } catch (err) {
       console.error("Booking Error:", err);
-      alert("An error occurred during booking.");
+
+      // Handle different types of errors
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(`Booking failed: ${err.response.data.message}`);
+      } else if (err.response && err.response.status === 400) {
+        alert("Invalid booking data. Please check your information and try again.");
+      } else if (err.response && err.response.status === 404) {
+        alert("Tour not found. Please refresh the page and try again.");
+      } else {
+        alert("An error occurred during booking. Please try again later.");
+      }
     }
   };
 
@@ -143,12 +151,25 @@ export default function TourDetails() {
         <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
           <div className="relative h-[400px]">
             <img
-              src={`https://hariye-tour-agency.onrender.com/images/${tour.image}`}
+              src={`https://hariye-tour-agency-u7bh.onrender.com/images/${tour.image}`}
               className="w-full h-full object-cover"
               alt={tour.title}
             />
             <div className="absolute top-6 right-6 bg-white px-5 py-2 rounded-full shadow-xl font-bold text-emerald-600 text-xl">
               ${tour.price}
+            </div>
+            {tour.Available_Spots === 0 && (
+              <div className="absolute top-6 left-6 bg-red-500 text-white px-4 py-2 rounded-full shadow-xl font-bold text-sm">
+                FULLY BOOKED
+              </div>
+            )}
+            <div className={`absolute bottom-6 left-6 px-4 py-2 rounded-full shadow-xl font-bold text-sm ${
+              tour.status === 'upcoming' ? 'bg-green-100 text-green-800' :
+              tour.status === 'ongoing' ? 'bg-blue-100 text-blue-800' :
+              tour.status === 'completed' ? 'bg-gray-100 text-gray-800' :
+              'bg-red-100 text-red-800'
+            }`}>
+              {tour.status?.toUpperCase()}
             </div>
           </div>
 
@@ -179,10 +200,10 @@ export default function TourDetails() {
               </div>
               <div>
                 <p className="text-xs font-bold text-emerald-600 uppercase">
-                  Available
+                  Available Spots
                 </p>
-                <p className="font-medium">
-                  {tour.Available_Spots || "Available"}
+                <p className={`font-medium ${tour.Available_Spots === 0 ? 'text-red-600 font-bold' : ''}`}>
+                  {tour.Available_Spots === 0 ? 'FULLY BOOKED' : tour.Available_Spots}
                 </p>
               </div>
             </div>
@@ -198,27 +219,33 @@ export default function TourDetails() {
               <Highlights />
             </div>
 
-            {/* ✅ SHOW MESSAGE IF COMPLETED */}
-            {isCompleted && (
+            {/* ✅ SHOW MESSAGE IF NOT BOOKABLE */}
+            {!isBookable && (
               <div className="mb-6 text-center text-red-500 font-semibold">
-                Sorry, this tour is already completed
+                {tour?.Available_Spots === 0
+                  ? "Sorry, this tour is fully booked"
+                  : `Sorry, this tour is ${tour.status} and cannot be booked`
+                }
               </div>
             )}
 
-            {!showForm && !isCompleted ? (
+            {!showForm && isBookable ? (
               <button
                 onClick={() => setShowForm(true)}
-                disabled={isCompleted}
+                disabled={!isBookable}
                 className={`w-full py-4 rounded-2xl font-bold shadow-lg transition-all ${
-                  isCompleted
+                  !isBookable
                     ? "bg-gray-400 cursor-not-allowed text-white"
                     : "bg-emerald-600 hover:bg-emerald-700 text-white"
                 }`}
               >
-                {isCompleted ? "Tour Completed" : "Book This Tour Now"}
+                {!isBookable
+                  ? (tour?.Available_Spots === 0 ? "Fully Booked" : `Tour ${tour.status}`)
+                  : "Book This Tour Now"
+                }
               </button>
             ) : (
-              !isCompleted && (
+              isBookable && (
                 <form
                   onSubmit={handleBookingSubmit}
                   className="bg-slate-50 p-8 rounded-3xl border-2 border-emerald-100 animate-in fade-in slide-in-from-bottom-4 duration-500"

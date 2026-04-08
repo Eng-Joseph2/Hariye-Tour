@@ -8,7 +8,7 @@ export const updateBookingStatus = async (req, res) => {
     const booking = await BookingModel.findByIdAndUpdate(
       id,
       { status },
-      { new: true },
+      { returnDocument: 'after' },
     ).populate("tourId");
 
     if (status === "allowed") {
@@ -51,11 +51,83 @@ export const updateBookingStatus = async (req, res) => {
 };
 
 import BookingModel from "../Models/BookingModel.js";
+import TourModel from "../Models/TourModel.js";
 
 // 1. Create a new Booking
 export const createBooking = async (req, res) => {
   try {
     const { full_name, email, gender, tourId } = req.body;
+
+    // Input validation
+    if (!full_name || !email || !gender || !tourId) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required: full_name, email, gender, tourId",
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid email address",
+      });
+    }
+
+    // Validate gender
+    if (!["Male", "Female", "Other"].includes(gender)) {
+      return res.status(400).json({
+        success: false,
+        message: "Gender must be Male, Female, or Other",
+      });
+    }
+
+    // Validate tour exists and is bookable
+    const tour = await TourModel.findById(tourId);
+    if (!tour) {
+      return res.status(404).json({
+        success: false,
+        message: "Tour not found",
+      });
+    }
+
+    // Validate tour status
+    if (tour.status !== "upcoming") {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot book this tour. Tour status is ${tour.status}`,
+      });
+    }
+
+    // Validate tour capacity logic
+    if (tour.max_Gust < tour.Available_Spots) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid tour configuration: Max guests cannot be less than available spots",
+      });
+    }
+
+    // Check if tour is fully booked
+    if (tour.Available_Spots <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "This tour is fully booked. No available spots remaining.",
+      });
+    }
+
+    // Check if user already has a booking for this tour
+    const existingBooking = await BookingModel.findOne({
+      email: email,
+      tourId: tourId,
+    });
+
+    if (existingBooking) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already booked this tour. Multiple bookings are not allowed.",
+      });
+    }
 
     // Create new instance
     const newBooking = new BookingModel({
@@ -69,12 +141,18 @@ export const createBooking = async (req, res) => {
     // Save to MongoDB
     const savedBooking = await newBooking.save();
 
+    // Update available spots (decrement by 1)
+    await TourModel.findByIdAndUpdate(tourId, {
+      $inc: { Available_Spots: -1 }
+    });
+
     res.status(201).json({
       success: true,
       message: "Booking created successfully!",
       data: savedBooking,
     });
   } catch (error) {
+    console.error("Booking creation error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to create booking",
@@ -83,10 +161,12 @@ export const createBooking = async (req, res) => {
   }
 };
 
-// 2. Read all Bookings (The one we fixed earlier)
+// 2. Read Bookings
 export const readBooking = async (req, res) => {
   try {
-    const bookings = await BookingModel.find().populate("tourId");
+    const { email } = req.query;
+    const filter = email ? { email } : {};
+    const bookings = await BookingModel.find(filter).populate("tourId");
     res.status(200).json({ success: true, data: bookings });
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
@@ -97,13 +177,30 @@ export const readBooking = async (req, res) => {
 export const deleteBooking = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedBooking = await BookingModel.findByIdAndDelete(id);
 
-    if (!deletedBooking) {
+    // First, find the booking to get the tourId
+    const booking = await BookingModel.findById(id);
+    if (!booking) {
       return res
         .status(404)
         .json({ success: false, message: "Booking not found" });
     }
+
+    // Only allow deletion of pending bookings (not confirmed ones)
+    if (booking.status === 'allowed') {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot delete a confirmed booking. Please contact support."
+      });
+    }
+
+    // Delete the booking
+    const deletedBooking = await BookingModel.findByIdAndDelete(id);
+
+    // Increment available spots back
+    await TourModel.findByIdAndUpdate(booking.tourId, {
+      $inc: { Available_Spots: 1 }
+    });
 
     res
       .status(200)
